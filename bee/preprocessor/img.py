@@ -1,7 +1,8 @@
 """
-read svs files using openslide-python at 1.25x
-read other 2d image files using PIL
-read 3d image files using #TODO
+Data loading:
+read WSI SVS files using openslide-python at 1.25x
+read other pathological image files using PIL
+read medical imaging files using #TODO
 """
 
 import numpy as np
@@ -94,9 +95,9 @@ def read_svs(filepath, target_mag=1.25):
         output = np.concatenate(output, axis=1)
         return output
 
-def read_2d(filepath, downscale=4):
+def read_tile(filepath, downscale=4):
     """
-    Read a 2d image file
+    Read a pathological image file
     params filepath: path to image file
     params downscale: downscale factor, default 4
     return: RGB numpy array
@@ -106,3 +107,13 @@ def read_2d(filepath, downscale=4):
     return np.asarray(im)  
 
 #TODO: add a function to read 3s medical imaging files
+
+#TODO: need to update this to support more image types
+def read_image(path):
+    ext = path.split('.')[-1]
+    if ext == 'svs':
+        return read_svs(path)
+    elif ext in ['png', 'jpg', 'jpeg']:
+        return read_tile(path)
+    else:
+        raise NotImplementedError(f'Not implemented for {ext} file type')
