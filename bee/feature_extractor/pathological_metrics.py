@@ -1,25 +1,78 @@
+"""
+Pathological image metrics
+"""
+
 import os
 import sys
-import numpy
-import cv2
-import copy
-from PIL import Image
 from ast import literal_eval as make_tuple
 import skimage
-from skimage import io, color, img_as_ubyte, morphology
+from skimage import io, color, morphology
 from skimage.filters import sobel
 from skimage.filters import gabor_kernel, frangi, gaussian, median, laplace
 from skimage.color import convert_colorspace, rgb2gray, rgb2hsv, separate_stains, hed_from_rgb
 from skimage.morphology import remove_small_objects, disk, binary_opening, dilation
 from distutils.util import strtobool
 import numpy as np
+import pandas as pd
 import scipy
 from scipy import ndimage as ndi
-from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
+
+from preprocessor import read_image
 from multiprocessing import Pool
 
+def get_path_metrics(image_files, n_workers):
+    """
+    Get metrics from all cohorts.
+    param: image_files: dict, {cohort_name: [image_file1, image_file2, ...]}
+    param: n_workers: int, number of workers
+    return: pandas dataframe
+    """
+    df = None
+    for cohort_name, im_paths in image_files.items():
+        print(f'Extracting features from {cohort_name}')
+        with Pool(n_workers) as p:
+            results = p.map(get_one_path_metrics, im_paths)
+        # results = [get_one_path_metrics(im_path) for im_path in im_paths]
+        data={}
+        names = [r[0] for r in results]
+        data['Name'] = names
+        metrics = [r[1] for r in results]
+        for feat_name in metrics[0].keys():
+            data[feat_name] = [m[feat_name] for m in metrics]
+        data['Cohort'] = [cohort_name] * len(names)
+        if df is None:
+            df = pd.DataFrame(data)
+        else:
+            df = pd.concat([df, pd.DataFrame(data)], ignore_index=True)
+    return df
 
+
+def get_one_path_metrics(im_path):
+    """
+    Get metrics from a single image
+    param: im_path: str, path to image
+    return: dict, {metric_name: metric_value}
+    """
+    name = os.path.basename(im_path)
+    name = os.path.splitext(name)[0]
+    img = read_image(im_path)
+    tmask = getTissueMask(img)
+    tmask_ratio = np.sum(tmask)/(tmask.shape[0]*tmask.shape[1])
+    dark_tmask = getDarkTissueMask(img)
+    dark_tmask_ratio = np.sum(dark_tmask)/(dark_tmask.shape[0]*dark_tmask.shape[1])
+
+    d = {'Tissue Ratio': tmask_ratio, 'Dark Tissue Ratio': dark_tmask_ratio}
+    tmpD = {}
+    tmpD = {**tmpD, **d}
+    for p in [
+            getHE, getHueSaturation, getContrast,
+            getSmoothness, getFatlikeTissue, getBlurryRegion,
+            getBrightness,
+        ]:
+        d = p(img, tmask)
+        tmpD = {**tmpD, **d}
+    return name, tmpD
 
 def getTissueMask(img):
     upper_thresh = .9
@@ -241,71 +294,6 @@ def compute_gabor(img, params):
         feats[:, :, k] = filtered
     return feats
 
-def compute_frangi(img, params):
-    frangi_scale_range = make_tuple(params.get("frangi_scale_range", "(1, 10)"))
-    frangi_scale_step = float(params.get("frangi_scale_step", 2))
-    frangi_beta1 = float(params.get("frangi_beta1", .5))
-    frangi_beta2 = float(params.get("frangi_beta2", 15))
-    frangi_black_ridges = strtobool(params.get("frangi_black_ridges", "True"))
-    feat = frangi(rgb2gray(img), scale_range = frangi_scale_range, scale_step =frangi_scale_step, beta =frangi_beta1, gamma=frangi_beta2, black_ridges  =frangi_black_ridges)
-    return feat[:, :, None]  # add singleton dimension
-
-def trainModelPen(example_path, example_mask_path):
-    model_vals = []
-    model_labels = np.empty([0, 1])
-    img = io.imread(example_path)
-    params = dict(
-                threshold = .5,
-                area_threshold = 100,
-                features = ['frangi', 'laplace', 'rgb'],
-                laplace_ksize = 3,
-                frangi_scale_range = '(1,10)',
-                frangi_scale_step = 2,
-                frangi_beta1 = .5,
-                frangi_beta2= 15,
-                frangi_black_ridges= 'True',
-
-                gabor_theta= 4,
-                gabor_sigma= '(1,3)',
-                gabor_frequency= '(0.05, 0.25)',
-
-                lbp_radius= 3,
-                lbp_points= 24,
-                lbp_method= 'default',
-
-                median_disk_size= 3,
-             )
-    eximg = compute_features(img, params)
-    eximg = eximg.reshape(-1, eximg.shape[2])
-    model_vals.append(eximg)
-    mask = io.imread(example_mask_path, as_gray=True).reshape(-1,1)
-    model_labels = np.vstack((model_labels, mask))
-
-    model_vals = np.vstack(model_vals)
-    clf = RandomForestClassifier(n_jobs=-1)
-    clf.fit(model_vals, model_labels.ravel())
-    return clf
-
-def trainCoverslipEdge(example_path, example_mask_path):
-    params = dict(
-                area_threshold = 15,
-                features =  ['frangi', 'laplace', 'rgb'],
-                dilate_kernel_size = 5,
-    )
-    model_vals = []
-    model_labels = np.empty([0, 1])
-    img = io.imread(example_path)
-    eximg = compute_features(img, params)
-    eximg = eximg.reshape(-1, eximg.shape[2])
-    model_vals.append(eximg)
-    mask = io.imread(example_mask_path, as_gray=True).reshape(-1,1)
-    model_labels = np.vstack((model_labels, mask))
-
-    model_vals = np.vstack(model_vals)
-    clf = RandomForestClassifier(n_jobs=-1)
-    clf.fit(model_vals, model_labels.ravel())
-    return clf
-
 def getBlurryRegion(src_img, tmask):
     #img_work_size = 2.5x
     blur_radius = 100
@@ -318,63 +306,3 @@ def getBlurryRegion(src_img, tmask):
     ratio = np.sum(mask) / mask.size
     a = {'Blurry Region Ratio': ratio}
     return a
-
-def getPenMarking(img, tmask, model):
-    params = dict(
-                threshold = .5,
-                area_threshold = 100,
-                features = ['frangi', 'laplace', 'rgb'],
-                laplace_ksize = 3,
-                frangi_scale_range = '(1,10)',
-                frangi_scale_step = 2,
-                frangi_beta1 = .5,
-                frangi_beta2= 15,
-                frangi_black_ridges= 'True',
-
-                gabor_theta= 4,
-                gabor_sigma= '(1,3)',
-                gabor_frequency= '(0.05, 0.25)',
-
-                lbp_radius= 3,
-                lbp_points= 24,
-                lbp_method= 'default',
-
-                median_disk_size= 3,
-    )
-    thresh = float(params.get("threshold", .5))
-    clf = model
-    feats = compute_features(img, params)
-    cal = clf.predict_proba(feats.reshape(-1, feats.shape[2]))
-    cal = cal.reshape(img.shape[0], img.shape[1], 2)
-    mask = cal[:, :, 1] > thresh
-    area_thresh = int(params.get("area_threshold", "5"))
-    if area_thresh > 0:
-        mask = remove_small_objects(mask, min_size=area_thresh, in_place=True)
-    dilate_kernel_size = int(params.get("dilate_kernel_size", "0"))
-    if dilate_kernel_size > 0:
-        mask = dilation(mask, footprint=np.ones((dilate_kernel_size, dilate_kernel_size)))
-    mask = tmask & (mask > 0)
-    ratio = np.sum(mask)/np.sum(tmask)
-    return ratio
-
-def getCoverslipEdge(img, tmask, model):
-    params = dict(
-                area_threshold = 15,
-                features =  ['frangi', 'laplace', 'rgb'],
-                dilate_kernel_size = 5,
-    )
-    thresh = float(params.get("threshold", .5))
-    clf = model
-    feats = compute_features(img, params)
-    cal = clf.predict_proba(feats.reshape(-1, feats.shape[2]))
-    cal = cal.reshape(img.shape[0], img.shape[1], 2)
-    mask = cal[:, :, 1] > thresh
-    area_thresh = int(params.get("area_threshold", "5"))
-    if area_thresh > 0:
-        mask = remove_small_objects(mask, min_size=area_thresh, in_place=True)
-    dilate_kernel_size = int(params.get("dilate_kernel_size", "0"))
-    if dilate_kernel_size > 0:
-        mask = dilation(mask, footprint=np.ones((dilate_kernel_size, dilate_kernel_size)))
-    mask = tmask & (mask > 0)
-    ratio = np.sum(mask)/np.sum(tmask)
-    return ratio

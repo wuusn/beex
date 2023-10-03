@@ -1,0 +1,15 @@
+CaseOne3CohortsTMA:
+    n_workers: 8
+    cohort_dir:
+        - '/mnt/hd0/original_datasets/BatchExample_BCa'
+        - '/mnt/hd0/original_datasets/BatchExample_BCa'
+        - '/mnt/hd0/original_datasets/BatchExample_BCa'
+    cohort_name:
+        - 'D1'
+        - 'D2'
+        - 'D3'
+    cohort_identifier:
+        - 'YTMA49'
+        - 'YTMA128'
+        - 'YTMA201'
+    save_dir: '/data/project_large_files/bee/CaseOne3CohortsTMA'
