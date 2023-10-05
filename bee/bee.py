@@ -2,9 +2,10 @@ import os
 import sys
 import glob
 import yaml
+import pandas as pd
 from multiprocessing import Pool
 from preprocessor.util import get_paths
-from analyzer import image_overview
+from analyzer import image_overview, umap_distribution_analysis
 from feature_extractor import extract_feature
 
 if __name__ == '__main__':
@@ -27,7 +28,7 @@ if __name__ == '__main__':
         # load image files from different cohorts
         image_files = {}
         for cohort_dir, cohort_name, cohort_identifier in zip(cohort_dirs, cohort_names, cohort_identifiers):
-            image_files[cohort_name] = get_paths(cohort_dir, cohort_identifier, image_exts)[:20]
+            image_files[cohort_name] = get_paths(cohort_dir, cohort_identifier, image_exts)
         
         # create save dir
         if not os.path.exists(save_dir):
@@ -37,7 +38,13 @@ if __name__ == '__main__':
         # image_overview(image_files, save_dir)
 
         # feature extraction
-        features = extract_feature(image_files, save_dir, n_workers)
+        # features = extract_feature(image_files, save_dir, n_workers)
+        features = pd.read_excel(f'{save_dir}/features.xlsx')
+
+        # UMAP
+        umap_distribution_analysis(features, save_dir)
+
+        
         
 
 
