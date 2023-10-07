@@ -26,16 +26,16 @@ if __name__ == '__main__':
         assert isinstance(cohort_dirs, list), 'cohort_dir must be a list'
         cohort_names = param.get('cohort_name')
         assert isinstance(cohort_names, list), 'cohort_name must be a list'
-        cohort_identifiers = param.get('cohort_identifier')
+        cohort_identifiers = param.get('cohort_identifier', [None] * len(cohort_dirs))
         image_exts = param.get('image_ext')
         save_dir = param.get('save_dir', 'save')
         n_workers = param.get('n_workers', 8)
         clinical_data_paths = param.get('clinical_data', None)
         clinical_columns = param.get('clinical_column', None)
-        random_seed = param.get('random_seed', None)
-        if random_seed is not None:
-            np.random.seed(random_seed)
-            random.seed(random_seed)
+        # random_seed = param.get('random_seed', None) Not Support yet
+        # if random_seed is not None:
+        #     np.random.seed(random_seed)
+        #     random.seed(random_seed)
 
         # load image files from different cohorts
         image_files = {}
