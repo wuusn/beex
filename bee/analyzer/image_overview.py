@@ -9,6 +9,9 @@ def plot_images(images, ncols=10, save_path=None):
         nrows += 1
 
     fig, axes = plt.subplots(nrows, ncols, figsize=(ncols*3, nrows*3))
+    fig.set_facecolor('black')
+    fig.tight_layout()
+    plt.axis('off')
 
     for ax, img in zip(axes.flatten(), images):
         # check if image is grayscale
@@ -18,6 +21,7 @@ def plot_images(images, ncols=10, save_path=None):
             ax.imshow(img)
     if save_path:
         plt.savefig(save_path)
+    plt.close()
 
 def image_overview(image_files, save_dir):
     """

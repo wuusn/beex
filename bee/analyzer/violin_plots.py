@@ -107,7 +107,7 @@ def violin_plots_distribution_analysis(features, save_dir):
     fig, axs = plt.subplots(num_rows, num_cols, figsize=(num_cols*5, num_rows*5))
 
     for ax, feature in zip(axs.flatten(), feature_names):
-        sns.violinplot(x='Cohort', y=feature, data=features, ax=ax)
+        sns.violinplot(x='Cohort', y=feature, data=features, ax=ax, hue='Cohort', legend=False)
         # highlight significant features
         if feature in significant_features:
             ax.set_facecolor((1, 0, 0, 0.1))
@@ -121,6 +121,7 @@ def violin_plots_distribution_analysis(features, save_dir):
     # save figure
     save_path = os.path.join(save_dir, 'violin_plots.png')
     plt.savefig(save_path)
+    plt.close()
     print(f'Saving violin plots to {save_path}')
 
 
