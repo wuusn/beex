@@ -195,7 +195,7 @@ def getContrast(img, tmask):
     rms_contrast = np.sqrt(pow(img - img.mean(), 2).sum() / img.size)
     a[f'Contrast TenenGrad'] = tenenGrad_contrast
     a[f'Contrast Michelson'] = michelson_contrast
-    #a[f'Contrast RMS (T)'] = rms_contrast
+    a[f'Contrast RMS'] = rms_contrast
 
     return a
 

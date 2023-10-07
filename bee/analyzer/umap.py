@@ -28,5 +28,6 @@ def umap_distribution_analysis(features, save_dir):
     colorbar.set_ticks(np.arange(0, max(cohort_mapping.values())+1), labels=cohort_mapping.keys())
     
     save_path = os.path.join(save_dir, 'umap.png')
+    print(f'Saving UMAP plot to {save_path}')
     plt.savefig(save_path)
     plt.close()

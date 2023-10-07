@@ -3,10 +3,16 @@ import sys
 import glob
 import yaml
 import pandas as pd
+import numpy as np
+import random
 from multiprocessing import Pool
 from preprocessor.util import get_paths
-from analyzer import image_overview, umap_distribution_analysis
+from analyzer import *
 from feature_extractor import extract_feature
+
+# ignore all warnings
+import warnings
+warnings.filterwarnings("ignore")
 
 if __name__ == '__main__':
 
@@ -24,6 +30,12 @@ if __name__ == '__main__':
         image_exts = param.get('image_ext')
         save_dir = param.get('save_dir', 'save')
         n_workers = param.get('n_workers', 8)
+        clinical_data_paths = param.get('clinical_data', None)
+        clinical_columns = param.get('clinical_column', None)
+        random_seed = param.get('random_seed', None)
+        if random_seed is not None:
+            np.random.seed(random_seed)
+            random.seed(random_seed)
 
         # load image files from different cohorts
         image_files = {}
@@ -35,14 +47,26 @@ if __name__ == '__main__':
             os.makedirs(save_dir)
         
         # image overview
-        # image_overview(image_files, save_dir)
+        image_overview(image_files, save_dir)
 
         # feature extraction
-        # features = extract_feature(image_files, save_dir, n_workers)
-        features = pd.read_excel(f'{save_dir}/features.xlsx')
+        features = extract_feature(image_files, save_dir, n_workers)
+        # features = pd.read_excel(f'{save_dir}/features.xlsx')
 
         # UMAP
         umap_distribution_analysis(features, save_dir)
+
+        # Violin Plots with Significant Tests
+        violin_plots_distribution_analysis(features, save_dir)
+
+        # Hierarchical Clustering
+        hierarchical_clustering(features, save_dir)
+
+        # Principal Variance Component Analysis (PVCA)
+        if clinical_data_paths is not None:
+            pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, cohort_names, save_dir)
+
+
 
         
         

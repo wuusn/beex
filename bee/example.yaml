@@ -5,11 +5,19 @@ CaseOne3CohortsTMA:
         - '/mnt/hd0/original_datasets/BatchExample_BCa'
         - '/mnt/hd0/original_datasets/BatchExample_BCa'
     cohort_name:
-        - 'D1'
-        - 'D2'
-        - 'D3'
+        - 'YTMA49'
+        - 'YTMA128'
+        - 'YTMA201'
     cohort_identifier:
         - 'YTMA49'
         - 'YTMA128'
         - 'YTMA201'
+    clinical_data:
+        - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA49.xlsx'
+        - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA128.xlsx'
+        - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA201.xlsx'
+    clinical_column:
+        - 'Age_Low_High'
+        - 'Race_3_Levels'
     save_dir: '/data/project_large_files/bee/CaseOne3CohortsTMA'
+    
