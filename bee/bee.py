@@ -47,7 +47,7 @@ if __name__ == '__main__':
             os.makedirs(save_dir)
         
         # image overview
-        image_overview(image_files, save_dir)
+        image_overview(image_files, n_workers, save_dir)
 
         # feature extraction
         features = extract_feature(image_files, save_dir, n_workers)

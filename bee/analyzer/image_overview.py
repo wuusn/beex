@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from preprocessor.img import read_image
+from multiprocessing import Pool
 
 def plot_images(images, ncols=10, save_path=None):
     n = len(images)
@@ -23,11 +24,12 @@ def plot_images(images, ncols=10, save_path=None):
         plt.savefig(save_path)
     plt.close()
 
-def image_overview(image_files, save_dir):
+def image_overview(image_files, ncpus, save_dir):
     """
     Plot image overview for all cohorts,
     each cohort has two rows of images, each row has 10 images.
     param: image_files: dict, {cohort_name: [image_file_paths]}
+    param: ncpus: int, number of cpus
     param: save_dir: str, path to save dir
     """
     images = []
@@ -35,8 +37,9 @@ def image_overview(image_files, save_dir):
         # random select 20 files
         indices = np.random.choice(len(files), 20, replace=False)
         files = np.array(files)[indices]
-        for file in files:
-            img = read_image(file)
-            images.append(img)
+        # using multi processing
+        with Pool(ncpus) as p:
+            images.extend(p.map(read_image, files))
+
     plot_images(images, ncols=10, save_path=save_dir+'/image_overview.png')
     print('image overview saved to {}'.format(save_dir+'/image_overview.png'))
