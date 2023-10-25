@@ -49,4 +49,25 @@ CaseOne3CohortsTMA:
         - 'Age_Low_High'
         - 'Race_3_Levels'
     save_dir: '/data/project_large_files/bee/CaseOne3CohortsTMA'
-    
+
+CaseTwo4CohortsWSI:
+    n_workers: 8
+    cohort_dir:
+        - '/mnt/hd0/original_datasets/HCC_data/TCGA'
+        - '/mnt/hd0/original_datasets/HCC_data/GDPH'
+        - '/mnt/hd0/original_datasets/HCC_data/yunnan'
+        - '/mnt/hd0/original_datasets/HCC_data/zhejiang'
+    cohort_name:
+        - 'TCGA'
+        - 'GDPH'
+        - 'FAHKU'
+        - 'FAHZU'
+    clinical_data:
+        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/TCGA.xlsx'
+        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/GDPH.xlsx'
+        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/FAHKU.xlsx'
+        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/FAHZU.xlsx'
+    clinical_column:
+        - 'Age_Low_High'
+        - 'Gender'
+    save_dir: '/data/project_large_files/bee/CaseTwo4ChortsWSI'

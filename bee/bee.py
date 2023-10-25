@@ -28,10 +28,12 @@ if __name__ == '__main__':
         assert isinstance(cohort_names, list), 'cohort_name must be a list'
         cohort_identifiers = param.get('cohort_identifier', [None] * len(cohort_dirs))
         image_exts = param.get('image_ext')
+        mask_exts = param.get('mask_ext', [None]*len(cohort_dirs))
         save_dir = param.get('save_dir', 'save')
         n_workers = param.get('n_workers', 8)
         clinical_data_paths = param.get('clinical_data', None)
         clinical_columns = param.get('clinical_column', None)
+        mask_dirs = param.get('mask_dir', [None]*len(cohort_dirs))
         # random_seed = param.get('random_seed', None) Not Support yet
         # if random_seed is not None:
         #     np.random.seed(random_seed)
@@ -39,8 +41,17 @@ if __name__ == '__main__':
 
         # load image files from different cohorts
         image_files = {}
-        for cohort_dir, cohort_name, cohort_identifier in zip(cohort_dirs, cohort_names, cohort_identifiers):
-            image_files[cohort_name] = get_paths(cohort_dir, cohort_identifier, image_exts)
+        mask_files = {}
+        for cohort_dir, mask_dir, cohort_name, cohort_identifier in zip(cohort_dirs, mask_dirs, cohort_names, cohort_identifiers):
+            image_files[cohort_name] = sorted(get_paths(cohort_dir, cohort_identifier, image_exts))
+            if mask_dir is not None:
+                mask_files[cohort_name] = sorted(get_paths(mask_dir, cohort_identifier, mask_exts))
+            else:
+                mask_files[cohort_name] = [None] * len(image_files[cohort_name])
+            
+            # check if image and mask files have the same length
+            assert len(image_files[cohort_name]) == len(mask_files[cohort_name]), f'Number of image files and mask files are not equal for {cohort_name}'
+            
         
         # create save dir
         if not os.path.exists(save_dir):
@@ -50,7 +61,7 @@ if __name__ == '__main__':
         image_overview(image_files, n_workers, save_dir)
 
         # feature extraction
-        features = extract_feature(image_files, save_dir, n_workers)
+        features = extract_feature(image_files, mask_files, save_dir, n_workers)
         # features = pd.read_excel(f'{save_dir}/features.xlsx')
 
         # UMAP

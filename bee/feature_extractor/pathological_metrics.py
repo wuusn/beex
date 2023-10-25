@@ -20,8 +20,9 @@ from sklearn.ensemble import RandomForestClassifier
 
 from preprocessor import read_image
 from multiprocessing import Pool
+from PIL import Image
 
-def get_path_metrics(image_files, n_workers):
+def get_path_metrics(image_files, mask_files, n_workers):
     """
     Get metrics from all cohorts.
     param: image_files: dict, {cohort_name: [image_file1, image_file2, ...]}
@@ -32,7 +33,7 @@ def get_path_metrics(image_files, n_workers):
     for cohort_name, im_paths in image_files.items():
         print(f'Extracting features from {cohort_name}')
         with Pool(n_workers) as p:
-            results = p.map(get_one_path_metrics, im_paths)
+            results = p.map(get_one_path_metrics, im_paths, mask_files[cohort_name])
         # results = [get_one_path_metrics(im_path) for im_path in im_paths]
         data={}
         names = [r[0] for r in results]
@@ -48,7 +49,7 @@ def get_path_metrics(image_files, n_workers):
     return df
 
 
-def get_one_path_metrics(im_path):
+def get_one_path_metrics(im_path, mask_path):
     """
     Get metrics from a single image
     param: im_path: str, path to image
@@ -62,6 +63,14 @@ def get_one_path_metrics(im_path):
     dark_tmask = getDarkTissueMask(img)
     dark_tmask_ratio = np.sum(dark_tmask)/(dark_tmask.shape[0]*dark_tmask.shape[1])
 
+    if mask is None:
+        mask = tmask
+    else:
+        # resize mask to image size
+        mask = Image.open(mask_path).convert('L')
+        mask = np.array(mask.resize(img.shape[:2][::-1], Image.NEAREST))
+
+
     d = {'Tissue Ratio': tmask_ratio, 'Dark Tissue Ratio': dark_tmask_ratio}
     tmpD = {}
     tmpD = {**tmpD, **d}
@@ -70,7 +79,7 @@ def get_one_path_metrics(im_path):
             getSmoothness, getFatlikeTissue, getBlurryRegion,
             getBrightness,
         ]:
-        d = p(img, tmask)
+        d = p(img, mask)
         tmpD = {**tmpD, **d}
     return name, tmpD
 

@@ -1,7 +1,7 @@
 import os
 from .pathological_metrics import get_path_metrics
 
-def extract_feature(image_files, save_dir, n_workers):
+def extract_feature(image_files, mask_files, save_dir, n_workers):
     """
     Extract features from images and save them to excel file
     param: image_files: dict, {cohort_name: [image_file1, image_file2, ...]}
@@ -17,7 +17,7 @@ def extract_feature(image_files, save_dir, n_workers):
         raise NotImplementedError('Medical image is not supported yet')
     else:
         # pathological image
-        features = get_path_metrics(image_files, n_workers)
+        features = get_path_metrics(image_files, mask_files, n_workers)
     # save to excel
     features.to_excel(os.path.join(save_dir, 'features.xlsx'), index=False)
     print('features saved to {}'.format(os.path.join(save_dir, 'features.xlsx')))
