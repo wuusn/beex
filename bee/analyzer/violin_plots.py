@@ -62,7 +62,10 @@ def significant_analysis(features, save_dir):
             feature_list.append(batch.iloc[:, i])
         # Compute the Kruskal-Wallis H-test
         kruskal_p_values.iloc[i, 0] = names[i]
-        kruskal_p_values.iloc[i, 1] = kruskal(*feature_list)[1]
+        try:
+            kruskal_p_values.iloc[i, 1] = kruskal(*feature_list)[1]
+        except:
+            kruskal_p_values.iloc[i, 1] = 1
     # save to excel
     kruskal_p_values = kruskal_p_values.dropna().sort_values(by='p_value')
     kruskal_p_values.to_excel(os.path.join(save_dir, 'kruskal_p_values.xlsx'), index=False)

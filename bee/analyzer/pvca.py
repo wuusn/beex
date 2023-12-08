@@ -18,37 +18,6 @@ def pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, 
     param: save_dir: save directory
     return: None
     """
-    # duplicate df
-    df_selected = features.copy()
-    # drop column Name and Cohort
-    df_selected.drop(['Name', 'Cohort'], axis=1, inplace=True)
-    # Scale the DataFrame
-    scaler = StandardScaler()
-    scaled_df = pd.DataFrame(scaler.fit_transform(df_selected), columns=df_selected.columns)
-
-    # Replace NaN values with 0
-    scaled_df = scaled_df.fillna(0)
-
-    # Compute the correlation matrix
-    corr_mat = scaled_df.cov()
-
-    scaled_df_T = scaled_df.T
-
-    # Fit PCA
-    pca = PCA()
-    scaled_pca = pca.fit(scaled_df_T)
-
-    # Get the principal components (rotation in R)
-    prin_comps_scaled = scaled_pca.components_
-
-    # Get the eigenvalues (sdev^2 in R)
-    eigvalues_scaled = scaled_pca.explained_variance_
-
-    # Compute the sum of eigenvalues
-    eigvalues_sum_scaled = np.sum(eigvalues_scaled)
-
-    # Compute the variance explained
-    var_explained_scaled = eigvalues_scaled / eigvalues_sum_scaled
 
     # load clinical data and concatenate
     clinical_data = pd.DataFrame()
@@ -66,7 +35,45 @@ def pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, 
     clinical_data[cate_cols] = clinical_data[cate_cols].astype('category')
 
     # save clinical data
-    # clinical_data.to_excel(os.path.join(save_dir, 'clinical_data.xlsx'), index=False)
+    clinical_data.to_excel(os.path.join(save_dir, 'clinical_data.xlsx'), index=False)
+
+    # duplicate df
+    features = features[features['Name'].isin(clinical_data['Name'])]
+    df_selected = features.copy()
+    # print(len(df_selected), len(clinical_data))
+
+    # drop column Name and Cohort
+    df_selected.drop(['Name', 'Cohort'], axis=1, inplace=True)
+    # Scale the DataFrame
+    scaler = StandardScaler()
+    scaled_df = pd.DataFrame(scaler.fit_transform(df_selected), columns=df_selected.columns)
+    # print(len(scaled_df))
+
+    # Replace NaN values with 0
+    scaled_df = scaled_df.fillna(0)
+
+    # Compute the correlation matrix
+    corr_mat = scaled_df.cov()
+
+    scaled_df_T = scaled_df.T
+
+    # Fit PCA
+    pca = PCA()
+    scaled_pca = pca.fit(scaled_df_T)
+    # print(scaled_df_T.shape)
+    
+
+    # Get the principal components (rotation in R)
+    prin_comps_scaled = scaled_pca.components_
+
+    # Get the eigenvalues (sdev^2 in R)
+    eigvalues_scaled = scaled_pca.explained_variance_
+
+    # Compute the sum of eigenvalues
+    eigvalues_sum_scaled = np.sum(eigvalues_scaled)
+
+    # Compute the variance explained
+    var_explained_scaled = eigvalues_scaled / eigvalues_sum_scaled
 
     # processing PVCA
     outs = []
@@ -74,11 +81,13 @@ def pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, 
     num_pca = 5
     for i in range(num_pca):
         pc = prin_comps_scaled[:, i]
-        scaled_df_named = np.transpose(scaled_df)
+        # scaled_df_named = np.transpose(scaled_df)
         pc_proj = np.dot(scaled_df, pc)
         pc_proj = pd.DataFrame(pc_proj)
-        pc_proj['Name'] = df['Name']
-        df_pd_pc = pd.merge(clinical_data, pc_proj, how='outer')
+        pc_proj['Name'] = list(df['Name'])
+        df_pd_pc = pd.merge(clinical_data, pc_proj, on='Name', how='outer')
+        # print(df_pd_pc.shape)
+        # df_pd_pc.to_excel(os.path.join(save_dir, f'df_pd_pc{i+1}.xlsx'), index=False)
         df_pd_pc = df_pd_pc.dropna()
         df_pd_pc.columns = ['Name'] + cate_cols + [f'PC{i+1}']
 
@@ -89,13 +98,14 @@ def pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, 
                 effects += f"(1|{cate_col})"
             else:
                 effects += f" + (1|{cate_col})"
-        # combinations
         combinations = list(itertools.combinations(cate_cols, 2))
         for combination in combinations:
             effects += f" + (1|{combination[0]}:{combination[1]})"
+        # effects = "(1|Batch)"
         print(effects) 
 
         # fit model
+        # df_pd_pc.to_excel(os.path.join(save_dir, f'pvca_pc{i+1}.xlsx'), index=False)
         model = Lmer(f'PC{i+1} ~ {effects}', data=df_pd_pc)    
         model.fit()
         outs.append(model.ranef_var)

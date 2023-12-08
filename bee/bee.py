@@ -34,6 +34,7 @@ if __name__ == '__main__':
         clinical_data_paths = param.get('clinical_data', None)
         clinical_columns = param.get('clinical_column', None)
         mask_dirs = param.get('mask_dir', [None]*len(cohort_dirs))
+        feature_path = param.get('feature_path', None)
         # random_seed = param.get('random_seed', None) Not Support yet
         # if random_seed is not None:
         #     np.random.seed(random_seed)
@@ -58,11 +59,14 @@ if __name__ == '__main__':
             os.makedirs(save_dir)
         
         # image overview
-        image_overview(image_files, n_workers, save_dir)
+        # image_overview(image_files, n_workers, save_dir)
 
         # feature extraction
-        features = extract_feature(image_files, mask_files, save_dir, n_workers)
-        # features = pd.read_excel(f'{save_dir}/features.xlsx')
+        if feature_path is None:
+            features = extract_feature(image_files, mask_files, save_dir, n_workers)
+        else:
+            features = pd.read_excel(feature_path)
+        # features = features[features['Cohort'] != 'SSPH']
 
         # UMAP
         umap_distribution_analysis(features, save_dir)

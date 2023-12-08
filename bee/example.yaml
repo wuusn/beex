@@ -27,47 +27,133 @@
 #         - column2
 
 
-CaseOne3CohortsTMA:
-    n_workers: 8
-    cohort_dir:
-        - '/mnt/hd0/original_datasets/BatchExample_BCa'
-        - '/mnt/hd0/original_datasets/BatchExample_BCa'
-        - '/mnt/hd0/original_datasets/BatchExample_BCa'
-    cohort_name:
-        - 'YTMA49'
-        - 'YTMA128'
-        - 'YTMA201'
-    cohort_identifier:
-        - 'YTMA49'
-        - 'YTMA128'
-        - 'YTMA201'
-    clinical_data:
-        - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA49.xlsx'
-        - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA128.xlsx'
-        - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA201.xlsx'
-    clinical_column:
-        - 'Age_Low_High'
-        - 'Race_3_Levels'
-    save_dir: '/data/project_large_files/bee/CaseOne3CohortsTMA'
+# CaseOne3CohortsTMA:
+#     n_workers: 8
+#     cohort_dir:
+#         - '/mnt/hd0/original_datasets/BatchExample_BCa'
+#         - '/mnt/hd0/original_datasets/BatchExample_BCa'
+#         - '/mnt/hd0/original_datasets/BatchExample_BCa'
+#     cohort_name:
+#         - 'YTMA49'
+#         - 'YTMA128'
+#         - 'YTMA201'
+#     cohort_identifier:
+#         - 'YTMA49'
+#         - 'YTMA128'
+#         - 'YTMA201'
+#     clinical_data:
+#         - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA49.xlsx'
+#         - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA128.xlsx'
+#         - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA201.xlsx'
+#     clinical_column:
+#         - 'Age_Low_High'
+#         - 'Race_3_Levels'
+#     save_dir: '/data/project_large_files/bee/CaseOne3CohortsTMA'
 
-CaseTwo4CohortsWSI:
+# CaseTwo4CohortsWSI:
+#     n_workers: 8
+#     cohort_dir:
+#         - '/mnt/hd0/original_datasets/HCC_data/TCGA'
+#         - '/mnt/hd0/original_datasets/HCC_data/GDPH'
+#         - '/mnt/hd0/original_datasets/HCC_data/yunnan'
+#         - '/mnt/hd0/original_datasets/HCC_data/zhejiang'
+#     cohort_name:
+#         - 'TCGA'
+#         - 'GDPH'
+#         - 'FAHKU'
+#         - 'FAHZU'
+#     clinical_data:
+#         - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/TCGA.xlsx'
+#         - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/GDPH.xlsx'
+#         - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/FAHKU.xlsx'
+#         - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/FAHZU.xlsx'
+#     clinical_column:
+#         - 'Age_Low_High'
+#         - 'Gender'
+#     save_dir: '/data/project_large_files/bee/CaseTwo4ChortsWSI'
+
+# CaseThree3CohortsMRI:
+#     n_workers: 8
+#     img_ext:
+#         - '.nii.gz'
+#     cohort_dir:
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/YCPH'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/SSPH'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/RHWU'
+#     cohort_name:
+#         - 'YCPH'
+#         - 'SSPH'
+#         - 'RHWU'
+#     clinical_data:
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/YCPH.xlsx'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/SSPH.xlsx'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/RHWU.xlsx'
+#     clinical_column:
+#         - 'Age_Low_High'
+#         - 'PSA_Normal_Intermediate_High'
+#     save_dir: '/mnt/hd0/project_large_files/bee/CaseThree3CohortsMRI'
+
+# CaseFour3CohortsMRI:
+#     n_workers: 8
+#     img_ext:
+#         - '.nii.gz'
+#     cohort_dir:
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU'
+#     cohort_name:
+#         - 'YCPH'
+#         - 'SSPH'
+#         - 'RHWU'
+#     clinical_data:
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH.xlsx'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH.xlsx'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU.xlsx'
+#     clinical_column:
+#         - 'Age_Low_High'
+#         - 'PSA_Normal_Intermediate_High'
+#     save_dir: '/mnt/hd0/project_large_files/bee/CaseFour3CohortsMRI'
+
+# Case4_3cohorts_before:
+#     n_workers: 8
+#     img_ext:
+#         - '.nii.gz'
+#     cohort_dir:
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/YCPH'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/SSPH'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/RHWU'
+#     cohort_name:
+#         - 'YCPH'
+#         - 'SSPH'
+#         - 'RHWU'
+#     clinical_data:
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/YCPH.xlsx'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/SSPH.xlsx'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI/RHWU.xlsx'
+#     clinical_column:
+#         - 'Age_Low_High'
+#         - 'PSA_Normal_Intermediate_High'
+#     feature_path: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_before/features.xlsx'
+#     save_dir: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_before'
+
+Case4_3cohorts_after:
     n_workers: 8
+    img_ext:
+        - '.nii.gz'
     cohort_dir:
-        - '/mnt/hd0/original_datasets/HCC_data/TCGA'
-        - '/mnt/hd0/original_datasets/HCC_data/GDPH'
-        - '/mnt/hd0/original_datasets/HCC_data/yunnan'
-        - '/mnt/hd0/original_datasets/HCC_data/zhejiang'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU'
     cohort_name:
-        - 'TCGA'
-        - 'GDPH'
-        - 'FAHKU'
-        - 'FAHZU'
+        - 'YCPH'
+        - 'SSPH'
+        - 'RHWU'
     clinical_data:
-        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/TCGA.xlsx'
-        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/GDPH.xlsx'
-        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/FAHKU.xlsx'
-        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/FAHZU.xlsx'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH.xlsx'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH.xlsx'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU.xlsx'
     clinical_column:
         - 'Age_Low_High'
-        - 'Gender'
-    save_dir: '/data/project_large_files/bee/CaseTwo4ChortsWSI'
+        - 'PSA_Normal_Intermediate_High'
+    feature_path: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_after/features.xlsx'
+    save_dir: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_after'
