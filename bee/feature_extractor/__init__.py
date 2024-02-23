@@ -2,23 +2,25 @@ import os
 from .pathological_metrics import get_path_metrics
 from .radiological_metrics import get_radi_metrics
 
-def extract_feature(image_files, mask_files, save_dir, n_workers):
+def extract_feature(image_files, mask_files, feature_mode, save_dir, n_workers):
     """
     Extract features from images and save them to excel file
     param: image_files: dict, {cohort_name: [image_file1, image_file2, ...]}
+    param: mask_files: dict, {cohort_name: [mask_file1, mask_file2, ...]}
+    param: feature_mode: str, 'radi' or 'path'
     param: save_dir: str, path to save directory
     param: n_workers: int, number of workers
     return: pandas dataframe
     """
-    # check medical and pathological
-    # get one file extension
-    ext = os.path.splitext(image_files[list(image_files.keys())[0]][0])[1]
-    if ext in ['.nii.gz', '.gz']:
-        # medical image
+    # check feature mode
+    if feature_mode == 'radi':
+        # radiological image
         features = get_radi_metrics(image_files, mask_files, save_dir, n_workers)
-    else:
+    elif feature_mode == 'path':
         # pathological image
         features = get_path_metrics(image_files, mask_files, n_workers)
+    else:
+        raise ValueError('feature_mode should be "radi" or "path"')
     # save to excel
     feature_path = os.path.join(save_dir, 'features.xlsx')
     if os.path.exists(feature_path) is False:

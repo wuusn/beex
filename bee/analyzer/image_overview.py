@@ -20,6 +20,8 @@ def plot_images(images, ncols=10, nrows=10, save_path=None):
     ax_i = 0
     for _, imgs in images.items():
         for img in imgs:
+            if ax_i >= len(axs):
+                break
             ax = axs[ax_i]
             ax.axis('off')
             small_img = Image.fromarray(img).resize((img.shape[1]//4, img.shape[0]//4))
@@ -29,12 +31,18 @@ def plot_images(images, ncols=10, nrows=10, save_path=None):
             else:
                 ax.imshow(img)
             ax_i += 1
+        
+        if ax_i >= len(axs):
+            break
+
         if len(imgs) % ncols!=0:
             skip = ncols - len(imgs) % ncols
             for _ in range(skip):
                 ax = axs[ax_i]
                 ax.axis('off')
                 ax_i += 1
+        if ax_i >= len(axs):
+            break
     for j in range(ax_i, len(axs)):
         axs[j].axis('off')
 
@@ -54,7 +62,7 @@ def plot_images(images, ncols=10, nrows=10, save_path=None):
         plt.savefig(save_path)
     plt.close()
 
-def image_overview(image_files, ncpus, save_dir):
+def image_overview(image_files, mode, ncpus, save_dir):
     """
     Plot image overview for all cohorts,
     each cohort has two rows of images, each row has 10 images.
@@ -74,18 +82,8 @@ def image_overview(image_files, ncpus, save_dir):
             break
     
     n_cohort_rows = ncols // n_cohort
-
-    # check image type
-    for cohort_name, files in image_files.items():
-        path = files[0]
-        break
-    ext = path.split('.')[-1]
-    if ext  in ['svs', 'png', 'jpg', 'jpeg']:
-        isRadi = False
-    else:
-        isRadi = True
     
-    if isRadi:
+    if mode == 'radi':
         for cohort_name, files  in image_files.items():
             new_files = []
             extracted_dir = os.path.join(save_dir, 'tmp_data', cohort_name+'_extracted')

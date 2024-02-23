@@ -22,6 +22,7 @@ if __name__ == '__main__':
     for set_name, param in param_sets.items():
         print(set_name)
         print(param)
+        feature_mode = param.get('feature_mode', 'path')
         cohort_dirs = param.get('cohort_dir')
         assert isinstance(cohort_dirs, list), 'cohort_dir must be a list'
         cohort_names = param.get('cohort_name')
@@ -55,49 +56,49 @@ if __name__ == '__main__':
                 mask_files[cohort_name] = []
                 features = pd.read_excel(feature_path)
                 filenames = features[features['Cohort']==cohort_name]['Name'].tolist()
+                ext = image_exts[cohort_names.index(cohort_name)] if len(image_exts) == len(cohort_names) else image_exts[0]
+                msk_ext = mask_exts[cohort_names.index(cohort_name)] if len(mask_exts) == len(cohort_names) else mask_exts[0]
+                if ext.startswith('.'):
+                    ext = ext[1:]
+                if msk_ext != None and msk_ext.startswith('.'):
+                    msk_ext = msk_ext[1:]
                 for filename in filenames:
-                    # TODO: support all exts
-                    filepath = os.path.join(cohort_dir, filename+'.'+image_exts[0])
+                    filepath = os.path.join(cohort_dir, filename+'.'+ext)
                     if os.path.exists(filepath):
                         image_files[cohort_name].append(filepath)
                         if mask_dir is not None:
-                            #TODO: support all mask exts
-                            mask_files[cohort_name].append(os.path.join(mask_dir, filename+mask_exts[0]))
+                            mask_files[cohort_name].append(os.path.join(mask_dir, filename+'.'+msk_ext))
                         else:
                             mask_files[cohort_name].append(None)
             
             # check if image and mask files have the same length
             assert len(image_files[cohort_name]) == len(mask_files[cohort_name]), f'Number of image files and mask files are not equal for {cohort_name}'
             
-        # print(image_files)
         # create save dir
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
         # feature extraction
         if feature_path is None:
-            features = extract_feature(image_files, mask_files, save_dir, n_workers)
+            features = extract_feature(image_files, mask_files, feature_mode, save_dir, n_workers)
         else:
             features = pd.read_excel(feature_path)
-            
-        # features = extract_feature(image_files, mask_files, save_dir, n_workers)
 
         # image overview
-        image_overview(image_files, n_workers, save_dir)
-        
+        image_overview(image_files, feature_mode, n_workers, save_dir)
 
         # UMAP
-        # umap_distribution_analysis(features, save_dir)
+        umap_distribution_analysis(features, save_dir)
 
         # Violin Plots with Significant Tests
-        # violin_plots_distribution_analysis(features, save_dir)
+        violin_plots_distribution_analysis(features, save_dir)
 
         # Hierarchical Clustering
-        # hierarchical_clustering(features, save_dir)
+        hierarchical_clustering(features, save_dir)
 
         # Principal Variance Component Analysis (PVCA)
-        # if clinical_data_paths is not None:
-        #     pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, cohort_names, save_dir)
+        if clinical_data_paths is not None:
+            pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, cohort_names, save_dir)
 
 
 

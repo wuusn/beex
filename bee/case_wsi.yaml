@@ -1,21 +1,25 @@
 CaseWSI:
     n_workers: 8
     cohort_dir:
-        - '/mnt/hd0/original_datasets/HCC_data/TCGA'
-        - '/mnt/hd0/original_datasets/HCC_data/GDPH'
-        - '/mnt/hd0/original_datasets/HCC_data/yunnan'
-        - '/mnt/hd0/original_datasets/HCC_data/zhejiang'
+        # - '/mnt/hd0/project_large_files/bee/WSIs/TCGA'
+        # - '/mnt/hd0/project_large_files/bee/WSIs/GDPH'
+        # - '/mnt/hd0/project_large_files/bee/WSIs/FAHKU'
+        # - '/mnt/hd0/project_large_files/bee/WSIs/FAHZU'
+        - /mnt/hd0/project_large_files/bee/caseWSI/TCGA
+        - /mnt/hd0/project_large_files/bee/caseWSI/GDPH
+        - /mnt/hd0/project_large_files/bee/caseWSI/FAHKU
+        - /mnt/hd0/project_large_files/bee/caseWSI/FAHZU
     cohort_name:
         - 'TCGA'
         - 'GDPH'
         - 'FAHKU'
         - 'FAHZU'
     clinical_data:
-        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/TCGA.xlsx'
-        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/GDPH.xlsx'
-        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/FAHKU.xlsx'
-        - '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/FAHZU.xlsx'
+        - '/mnt/hd0/project_large_files/bee/caseWSI/TCGA.xlsx'
+        - '/mnt/hd0/project_large_files/bee/caseWSI/GDPH.xlsx'
+        - '/mnt/hd0/project_large_files/bee/caseWSI/FAHKU.xlsx'
+        - '/mnt/hd0/project_large_files/bee/caseWSI/FAHZU.xlsx'
     clinical_column:
         - 'Age_Low_High'
         - 'Gender'
-    save_dir: '/data/project_large_files/bee/CaseTwo4ChortsWSI'
+    save_dir: '/data/project_large_files/bee/deploy_test/CaseWSI'

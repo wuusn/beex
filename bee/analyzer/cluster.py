@@ -13,6 +13,10 @@ def hierarchical_clustering(features, save_dir):
     return: None
     """
     df_selected = features.drop(['Name', 'Cohort'], axis=1)
+    # # drop duplicated rows
+    # df_selected = df_selected[~df_selected.duplicated()]
+    # print(df_selected[df_selected.duplicated()])
+    
     # Scale the DataFrame
     scaler = StandardScaler()
     scaled_df = pd.DataFrame(scaler.fit_transform(df_selected), columns=df_selected.columns)

@@ -27,17 +27,19 @@ def get_radi_metrics(image_files, mask_files, save_dir, n_workers):
         cohort_dir = os.path.join(save_dir, 'tmp_data', cohort_name)
         # get current file path
         tmp_feature_dir = os.path.join(save_dir, 'tmp_data', cohort_name+'_extracted')
-        if not os.path.exists(tmp_feature_dir):
+        res_path = f"{save_dir}/tmp_data/{cohort_name}_extracted/IQM.xlsx"
+        if not os.path.exists(tmp_feature_dir) and not os.path.exists(res_path):
             cwd = os.getcwd()
             cmd = f"python {cwd}/feature_extractor/QC.py '{save_dir}/tmp_data/{cohort_name}_extracted' '{cohort_dir}'"
             os.system(cmd)
-        res_path = f"{save_dir}/tmp_data/{cohort_name}_extracted/IQM.xlsx"
+        
         cohort_feature = pd.read_excel(res_path)
         cohort_feature['Cohort'] = cohort_name
         if features is None:
             features = cohort_feature
         else:
             features = pd.concat([features, cohort_feature], axis=0)
+            features = features.reset_index(drop=True)
     
     return features
 
