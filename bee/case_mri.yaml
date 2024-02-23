@@ -1,0 +1,66 @@
+# CaseFour3CohortsMRI:
+#     n_workers: 8
+#     img_ext:
+#         - '.nii.gz'
+#     cohort_dir:
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU'
+#     cohort_name:
+#         - 'YCPH'
+#         - 'SSPH'
+#         - 'RHWU'
+#     clinical_data:
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH.xlsx'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH.xlsx'
+#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU.xlsx'
+#     clinical_column:
+#         - 'Age_Low_High'
+#         - 'PSA_Normal_Intermediate_High'
+#     save_dir: '/mnt/hd0/project_large_files/bee/CaseFour3CohortsMRI'
+
+CaseMRI_Before:
+    n_workers: 8
+    image_ext:
+        - '.nii.gz'
+    cohort_dir:
+        - '/mnt/hd0/original_datasets/Prostate_DWI/YCPH'
+        - '/mnt/hd0/original_datasets/Prostate_DWI/SSPH'
+        - '/mnt/hd0/original_datasets/Prostate_DWI/RHWU'
+    cohort_name:
+        - 'YCPH'
+        - 'SSPH'
+        - 'RHWU'
+    clinical_data:
+        - '/mnt/hd0/original_datasets/Prostate_DWI/YCPH.xlsx'
+        - '/mnt/hd0/original_datasets/Prostate_DWI/SSPH.xlsx'
+        - '/mnt/hd0/original_datasets/Prostate_DWI/RHWU.xlsx'
+    clinical_column:
+        - 'Age_Low_High'
+        - 'PSA_Normal_Intermediate_High'
+    feature_path: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_before_3/features.xlsx'
+    save_dir: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_before_3'
+    seed: 2023
+
+CaseMRI_After:
+    n_workers: 8
+    image_ext:
+        - '.nii.gz'
+    cohort_dir:
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU'
+    cohort_name:
+        - 'YCPH'
+        - 'SSPH'
+        - 'RHWU'
+    clinical_data:
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH.xlsx'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH.xlsx'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU.xlsx'
+    clinical_column:
+        - 'Age_Low_High'
+        - 'PSA_Normal_Intermediate_High'
+    feature_path: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_after_3/features.xlsx'
+    save_dir: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_after_3'
+    seed: 2023

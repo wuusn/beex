@@ -35,51 +35,69 @@ if __name__ == '__main__':
         clinical_columns = param.get('clinical_column', None)
         mask_dirs = param.get('mask_dir', [None]*len(cohort_dirs))
         feature_path = param.get('feature_path', None)
-        # random_seed = param.get('random_seed', None) Not Support yet
-        # if random_seed is not None:
-        #     np.random.seed(random_seed)
-        #     random.seed(random_seed)
+        seed = param.get('seed', None)
+        if seed is not None:
+            np.random.seed(seed)
+            random.seed(seed)
 
         # load image files from different cohorts
         image_files = {}
         mask_files = {}
         for cohort_dir, mask_dir, cohort_name, cohort_identifier in zip(cohort_dirs, mask_dirs, cohort_names, cohort_identifiers):
-            image_files[cohort_name] = sorted(get_paths(cohort_dir, cohort_identifier, image_exts))
-            if mask_dir is not None:
-                mask_files[cohort_name] = sorted(get_paths(mask_dir, cohort_identifier, mask_exts))
+            if feature_path is None:
+                image_files[cohort_name] = sorted(get_paths(cohort_dir, cohort_identifier, image_exts))
+                if mask_dir is not None:
+                    mask_files[cohort_name] = sorted(get_paths(mask_dir, cohort_identifier, mask_exts))
+                else:
+                    mask_files[cohort_name] = [None] * len(image_files[cohort_name])
             else:
-                mask_files[cohort_name] = [None] * len(image_files[cohort_name])
+                image_files[cohort_name] = []
+                mask_files[cohort_name] = []
+                features = pd.read_excel(feature_path)
+                filenames = features[features['Cohort']==cohort_name]['Name'].tolist()
+                for filename in filenames:
+                    # TODO: support all exts
+                    filepath = os.path.join(cohort_dir, filename+'.'+image_exts[0])
+                    if os.path.exists(filepath):
+                        image_files[cohort_name].append(filepath)
+                        if mask_dir is not None:
+                            #TODO: support all mask exts
+                            mask_files[cohort_name].append(os.path.join(mask_dir, filename+mask_exts[0]))
+                        else:
+                            mask_files[cohort_name].append(None)
             
             # check if image and mask files have the same length
             assert len(image_files[cohort_name]) == len(mask_files[cohort_name]), f'Number of image files and mask files are not equal for {cohort_name}'
             
-        
+        # print(image_files)
         # create save dir
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-        
-        # image overview
-        # image_overview(image_files, n_workers, save_dir)
 
         # feature extraction
         if feature_path is None:
             features = extract_feature(image_files, mask_files, save_dir, n_workers)
         else:
             features = pd.read_excel(feature_path)
-        # features = features[features['Cohort'] != 'SSPH']
+            
+        # features = extract_feature(image_files, mask_files, save_dir, n_workers)
+
+        # image overview
+        image_overview(image_files, n_workers, save_dir)
+        
 
         # UMAP
-        umap_distribution_analysis(features, save_dir)
+        # umap_distribution_analysis(features, save_dir)
 
         # Violin Plots with Significant Tests
-        violin_plots_distribution_analysis(features, save_dir)
+        # violin_plots_distribution_analysis(features, save_dir)
 
         # Hierarchical Clustering
-        hierarchical_clustering(features, save_dir)
+        # hierarchical_clustering(features, save_dir)
 
         # Principal Variance Component Analysis (PVCA)
-        if clinical_data_paths is not None:
-            pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, cohort_names, save_dir)
+        # if clinical_data_paths is not None:
+        #     pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, cohort_names, save_dir)
 
 
 

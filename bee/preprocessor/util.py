@@ -1,6 +1,7 @@
 import os
 import sys
 import glob
+import pathlib
 
 supported_exts = ['svs', 'tif', 'tiff', 'png', 'jpg', 'jpeg', 'bmp']
 

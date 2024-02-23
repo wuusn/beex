@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import umap
+import umap.plot
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
@@ -22,7 +23,7 @@ def umap_distribution_analysis(features, save_dir):
 
     reducer = umap.UMAP()
     embedding = reducer.fit_transform(x)
-    plt.scatter(embedding[:, 0], embedding[:, 1], c=y, cmap='Spectral')
+    plt.scatter(embedding[:, 0], embedding[:, 1], c=y, cmap='Spectral', s=10)
     plt.gca().set_aspect('equal', 'datalim')
     colorbar = plt.colorbar(boundaries=np.arange(0, max(cohort_mapping.values())+2)-0.5)
     colorbar.set_ticks(np.arange(0, max(cohort_mapping.values())+1), labels=cohort_mapping.keys())

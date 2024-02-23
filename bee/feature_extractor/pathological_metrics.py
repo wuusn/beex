@@ -33,8 +33,8 @@ def get_path_metrics(image_files, mask_files, n_workers):
     for cohort_name, im_paths in image_files.items():
         print(f'Extracting features from {cohort_name}')
         with Pool(n_workers) as p:
-            results = p.map(get_one_path_metrics, im_paths, mask_files[cohort_name])
-        # results = [get_one_path_metrics(im_path) for im_path in im_paths]
+            results = p.starmap(get_one_path_metrics, zip(im_paths, mask_files[cohort_name]))
+        # results = [get_one_path_metrics(im_paths[i], mask_files[cohort_name][i]) for i in range(len(im_paths))]
         data={}
         names = [r[0] for r in results]
         data['Name'] = names
@@ -63,7 +63,7 @@ def get_one_path_metrics(im_path, mask_path):
     dark_tmask = getDarkTissueMask(img)
     dark_tmask_ratio = np.sum(dark_tmask)/(dark_tmask.shape[0]*dark_tmask.shape[1])
 
-    if mask is None:
+    if mask_path is None:
         mask = tmask
     else:
         # resize mask to image size

@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 import math
+from statsmodels.stats.multitest import multipletests
 from scipy.stats import kruskal
 
 def significant_analysis(features, save_dir):
@@ -52,7 +53,7 @@ def significant_analysis(features, save_dir):
     for batch in scaled_df_kruskal['Batch'].unique():
         batch_list.append(scaled_df_kruskal[scaled_df_kruskal['Batch'] == batch])
     # Create an empty DataFrame with the specified number of rows and columns
-    kruskal_p_values = pd.DataFrame(index=range(len(names)), columns=['var_name', 'p_value'])
+    kruskal_p_values = pd.DataFrame(index=range(len(names)), columns=['var_name', 'h_statistic', 'p_value', 'adjusted_p_value'])
 
     # Compute the Kruskal-Wallis H-test for each feature
     for i in range(len(names)):
@@ -63,15 +64,22 @@ def significant_analysis(features, save_dir):
         # Compute the Kruskal-Wallis H-test
         kruskal_p_values.iloc[i, 0] = names[i]
         try:
-            kruskal_p_values.iloc[i, 1] = kruskal(*feature_list)[1]
+            kruskal_p_values.iloc[i, 1], kruskal_p_values.iloc[i, 2] = kruskal(*feature_list)
         except:
             kruskal_p_values.iloc[i, 1] = 1
     # save to excel
+    # print(kruskal_p_values)
+    
+    # get significant features
+    p_values = kruskal_p_values['p_value'].values
+    # print(f'p values: {p_values}')
+    reject, adjusted_p_values, _, _ = multipletests(p_values, alpha=0.05, method='fdr_bh')
+    kruskal_p_values['adjusted_p_value'] = adjusted_p_values
+    # print(f'Adjusted p value: {adjusted_p_value}')
+    significant_features = kruskal_p_values[kruskal_p_values['adjusted_p_value'] < 0.05]['var_name'].values
     kruskal_p_values = kruskal_p_values.dropna().sort_values(by='p_value')
     kruskal_p_values.to_excel(os.path.join(save_dir, 'kruskal_p_values.xlsx'), index=False)
     print(f'Saving Kruskal p values to {os.path.join(save_dir, "kruskal_p_values.xlsx")}')
-    # get significant features
-    significant_features = kruskal_p_values[kruskal_p_values['p_value'] < 0.05]['var_name'].values
     return significant_features
 
 

@@ -1,5 +1,6 @@
 import os
 from .pathological_metrics import get_path_metrics
+from .radiological_metrics import get_radi_metrics
 
 def extract_feature(image_files, mask_files, save_dir, n_workers):
     """
@@ -12,14 +13,16 @@ def extract_feature(image_files, mask_files, save_dir, n_workers):
     # check medical and pathological
     # get one file extension
     ext = os.path.splitext(image_files[list(image_files.keys())[0]][0])[1]
-    if ext in ['.nii.gz']:
+    if ext in ['.nii.gz', '.gz']:
         # medical image
-        raise NotImplementedError('Medical image is not supported yet')
+        features = get_radi_metrics(image_files, mask_files, save_dir, n_workers)
     else:
         # pathological image
         features = get_path_metrics(image_files, mask_files, n_workers)
     # save to excel
-    features.to_excel(os.path.join(save_dir, 'features.xlsx'), index=False)
-    print('features saved to {}'.format(os.path.join(save_dir, 'features.xlsx')))
+    feature_path = os.path.join(save_dir, 'features.xlsx')
+    if os.path.exists(feature_path) is False:
+        features.to_excel(os.path.join(save_dir, 'features.xlsx'), index=False)
+        print('features saved to {}'.format(os.path.join(save_dir, 'features.xlsx')))
     return features
     

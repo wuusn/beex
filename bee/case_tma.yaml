@@ -1,0 +1,47 @@
+# CaseTMA:
+#     n_workers: 8
+#     cohort_dir:
+#         - '/mnt/hd0/original_datasets/BatchExample_BCa'
+#         - '/mnt/hd0/original_datasets/BatchExample_BCa'
+#         - '/mnt/hd0/original_datasets/BatchExample_BCa'
+#     image_ext:
+#         - '.png'
+#     cohort_name:
+#         - 'VTMA-1'
+#         - 'VTMA-2'
+#         - 'YTMA-3'
+#     cohort_identifier:
+#         - 'YTMA49'
+#         - 'YTMA128'
+#         - 'YTMA201'
+#     clinical_data:
+#         - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA49.xlsx'
+#         - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA128.xlsx'
+#         - '/data/project_large_files/bee/CaseOne3CohortsTMA/YTMA201.xlsx'
+#     clinical_column:
+#         - 'Age_Low_High'
+#         - 'Race_3_Levels'
+#     save_dir: '/data/project_large_files/bee/CaseOne3CohortsTMA_2'
+#     feature_path: '/mnt/hd0/project_large_files/bee/CaseOne3CohortsTMA_2/features.xlsx'
+
+CaseTMA:
+    n_workers: 8
+    cohort_dir:
+        - '/mnt/hd0/project_large_files/bee/VTMA_v3/SUQH/imgs'
+        - '/mnt/hd0/project_large_files/bee/VTMA_v3/QDUH/imgs'
+        - '/mnt/hd0/project_large_files/bee/VTMA_v3/SHSU/imgs'
+    image_ext:
+        - 'png'
+    cohort_name:
+        - 'VTMA-1'
+        - 'VTMA-2'
+        - 'VTMA-3'
+    clinical_data:
+        - '/mnt/hd0/project_large_files/bee/VTMA_v3/SUQH/clinical.xlsx'
+        - '/mnt/hd0/project_large_files/bee/VTMA_v3/QDUH/clinical.xlsx'
+        - '/mnt/hd0/project_large_files/bee/VTMA_v3/SHSU/clinical.xlsx'
+    clinical_column:
+        - 'Invasion'
+        - 'Overgrade'
+    save_dir: '/data/project_large_files/bee/CaseVTMA_v4'
+    feature_path: '/mnt/hd0/project_large_files/bee/CaseVTMA_v3/features.xlsx'

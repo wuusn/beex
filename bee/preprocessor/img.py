@@ -95,7 +95,7 @@ def read_svs(filepath, target_mag=1.25):
         output = np.concatenate(output, axis=1)
         return output
 
-def read_tile(filepath, downscale=4):
+def read_tile(filepath, downscale=1):
     """
     Read a pathological image file
     params filepath: path to image file
