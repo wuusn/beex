@@ -36,6 +36,7 @@ if __name__ == '__main__':
         clinical_columns = param.get('clinical_column', None)
         mask_dirs = param.get('mask_dir', [None]*len(cohort_dirs))
         feature_path = param.get('feature_path', None)
+        skip = param.get('skip', [])
         seed = param.get('seed', None)
         if seed is not None:
             np.random.seed(seed)
@@ -85,7 +86,10 @@ if __name__ == '__main__':
             features = pd.read_excel(feature_path)
 
         # image overview
-        image_overview(image_files, feature_mode, n_workers, save_dir)
+        if image_files[cohort_names[0]] is not None and 'image_overview' not in skip:
+            image_overview(image_files, feature_mode, n_workers, save_dir)
+        else:
+            print('Skipping image overviewer.')
 
         # UMAP
         umap_distribution_analysis(features, save_dir)

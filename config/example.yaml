@@ -1,0 +1,46 @@
+# Examples of Configurations for BEE:
+
+# Title: Required, <str>, title of one configuration, there can be multiple configurations in one yaml file
+#     n_workers: Required, <int>, number of workers for parallel processing
+#     feature_mode: Required, <str>, mode of feature extraction, 'Path' for pathology and 'Radi' for radiology
+#     cohort_dir: Required, <a list of str>, a list of directories of cohort data, can be same if files in the same folder
+#         - folder1
+#         - folder2
+#         - folder3
+#     cohort_name: Required, <a list of str>, a list of cohort names used to identify cohorts in plots, list length should be same as cohort_dir
+#         - name1
+#         - name2
+#         - name3
+#     save_dir: Required, <str>, a directory to save results
+#     cohort_identifier: Optional, <a list of str>, identifier in filename to split files into different cohorts if they stored in the same folder, list length should be same as cohort_dir
+#         - id1
+#         - id2
+#         - id3
+#     image_ext: Optional, <a list of str>, a list of image file extensions, if not provided, all supported image files in the folder will be used
+#          - ext1
+#          - ext2
+#     clinical_data: Optional, <a list of str>, a list of clinical data file paths, if not provided, PVCA Analyzer will be skipped, list length should be same as cohort_dir
+#         - file1
+#         - file2
+#         - file3
+#     clinical_column: Optional, <a list of str>, a list of clinical data column names used in PVCA Analysis
+#         - column1
+#         - column2
+
+Example:
+    n_workers: 8
+    feature_mode: radi
+    image_ext:
+        - '.nii.gz'
+    cohort_dir:
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH'
+        - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU'
+    cohort_name:
+        - 'YCPH'
+        - 'SSPH'
+        - 'RHWU'
+    skip:
+        - image_overview
+    feature_path: './data/features.xlsx'
+    save_dir: './output'
