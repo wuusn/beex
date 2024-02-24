@@ -3,7 +3,7 @@
 ![](docs/beex_overview.png)
 
 # Installation
-Step 1: clone this repo:  
+Step 1: clone this repo
 
 Step 2: change dir to repo folder  
 
