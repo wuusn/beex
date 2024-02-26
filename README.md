@@ -24,7 +24,7 @@ To run BEEx, we need a `yaml` config file. In `config` dir, there are some examp
 Below, we provide a detailed explanation of a config file (config/case_tma.yaml).
 
 ```
-CaseTMA: # The config title, can any string
+CaseTMA: # The config title, can be any string
     feature_mode: path # mode of feature extraction, 'path' for pathology and 'radi' for radiology
     n_workers: 8 # number of workers for parallel processing
     cohort_dir: # a list of directories of cohort data
