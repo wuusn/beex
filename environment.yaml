@@ -264,6 +264,8 @@ dependencies:
       - pyct==0.5.0
       - pydicom==2.4.3
       - pygments==2.16.1
+      - pylibjpeg==2.0.0
+      - pylibjpeg-libjpeg==2.0.2
       - pymer4==0.8.1
       - pynndescent==0.5.10
       - pyparsing==3.1.1
