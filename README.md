@@ -1,4 +1,5 @@
 # Batch Effect Explorer for Medical Images
+A tool to assess and validate batch effects in medical images.
 
 ![](docs/beex_overview.png)
 
