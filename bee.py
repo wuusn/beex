@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
         # feature extraction
         if feature_path is None:
-            features = extract_feature(image_files, mask_files, feature_mode, save_dir, n_workers)
+            features = extract_feature(image_files, mask_files, feature_mode, cohort_dirs, save_dir, n_workers)
         else:
             features = pd.read_excel(feature_path)
 

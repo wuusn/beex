@@ -51,18 +51,19 @@ def patient_name(root):
             if i.endswith('.mha')
             or i.endswith('.nii')
             or i.endswith('.gz')]
+    # print('dicoms length:', len(files), len(dicoms))
     mhas_subjects = [os.path.basename(scan)[:os.path.basename(scan).index('.')] for scan in mhas]
     dicom_subjects = []
-    mat_subjects = [os.path.basename(scan)[:os.path.basename(scan).index('.')] for scan in mats]
-    
+    mat_subjects = [os.path.basename(scan)[:os.path.basename(scan).index('.')] for scan in mats] 
+    subjects_id = []
     if folders_flag == "False":
+        # print('folder is false')
         for i in dicoms:
             dicom_subjects.append(pydicom.dcmread(i).PatientID) 
         duplicateFrequencies = {}
         for i in dicom_subjects:
             duplicateFrequencies[i] = dicom_subjects.count(i)
         
-        subjects_id = []
         subjects_number = []
         for i in range(len(duplicateFrequencies)):
               subjects_id.append(list(duplicateFrequencies.items())[i][0])
@@ -71,6 +72,7 @@ def patient_name(root):
         splits = [dicoms[ind[i]:ind[i+1]] for i in range(len(ind)-1)]
     elif folders_flag == "True":
         dicom_subjects = [d for d in os.listdir(root) if os.path.isdir(root + os.sep + d)]
+        # print('folder is true', dicom_subjects)
         subjects_number = []
         for i in range(len(dicom_subjects)):
             subjects_number.append(
@@ -81,7 +83,7 @@ def patient_name(root):
         ind = [0] + list(accumulate(subjects_number))
         splits = [dicoms[ind[i]:ind[i+1]] for i in range(len(ind)-1)]
 
-    
+    # print('subjects_id:', subjects_id)
     subjects = subjects_id + mhas_subjects + mat_subjects
     print('The number of patients is {}'.format(len(subjects)))
     return files, subjects, splits, mhas, mhas_subjects, mats, mat_subjects
@@ -157,10 +159,10 @@ def volume_mat(mat_scan, name):
 def saveThumbnails_dicom(v, output):
     if save_masks_flag!='False':
         ffolder = output + '_foreground_masks'
-        os.makedirs(ffolder + os.sep + v[1]['ID'])
+        os.makedirs(ffolder + os.sep + v[1]['ID'], exist_ok=True)
     elif save_masks_flag=='False':
         ffolder = output 
-    os.makedirs(output + os.sep + v[1]['ID'])
+    os.makedirs(output + os.sep + v[1]['ID'], exist_ok=True)
     for i in range(0, len(v[0]), sample_size):
         plt.imsave(output + os.sep + v[1]['ID'] + os.sep + v[1]['ID'] + '(%d).png' % i, v[0][i], cmap = cm.Greys_r)
     print('The number of %d images are saved to %s' % (len(v[0]),output + os.sep + v[1]['ID']))
@@ -169,10 +171,10 @@ def saveThumbnails_dicom(v, output):
 def saveThumbnails_mat(v, output):
     if save_masks_flag!='False':
         ffolder = output + '_foreground_masks'
-        os.makedirs(ffolder + os.sep + v[1]['ID'])
+        os.makedirs(ffolder + os.sep + v[1]['ID'], exist_ok=True)
     elif save_masks_flag=='False':
         ffolder = output 
-    os.makedirs(output + os.sep + v[1]['ID'])
+    os.makedirs(output + os.sep + v[1]['ID'], exist_ok=True)
     for i in range(np.shape(v[0])[2]):
         plt.imsave(output + os.sep + v[1]['ID']+ os.sep + v[1]['ID'] + '(%d).png' % int(i+1), v[0][:,:,i], cmap = cm.Greys_r)
     print('The number of %d images are saved to %s' % (np.shape(v[0])[2],output + os.sep + v[1]['ID']))
@@ -180,7 +182,7 @@ def saveThumbnails_mat(v, output):
 
 
 def saveThumbnails_nondicom(v, output):
-    os.makedirs(output + os.sep + v[1])
+    os.makedirs(output + os.sep + v[1], exist_ok=True)
     for i in range(len(v[0])):
         plt.imsave(output + os.sep + v[1] + os.sep + v[1] + '(%d).png' % int(i+1), scipy.ndimage.rotate(v[0][i],270), cmap = cm.Greys_r)
         # print('image number %d out of %d is saved to %s' % (int(i+1), len(v[0]),output + os.sep + v[1]))
@@ -196,7 +198,6 @@ def worker_callback(s,fname_outdir):
         first = False
         csv_report.write("\n".join(["#" + s for s in headers])+"\n")
         csv_report.write("#dataset:"+"\t".join(s["output"])+"\n")
-                         
     csv_report.write("\t".join([str(s[field]) for field in s["output"]])+"\n")
     csv_report.flush()
     nfiledone += 1
@@ -205,7 +206,9 @@ def worker_callback(s,fname_outdir):
 
 
 def tsv_to_dataframe(tsvfileaddress):
-    return pd.read_csv(tsvfileaddress, sep='\t', skiprows=2, header=0)
+    dtype_dict = {"#dataset:Patient": str}
+    df = pd.read_csv(tsvfileaddress, sep='\t', skiprows=2, header=0, dtype=dtype_dict)
+    return df
 
 
 def data_whitening(dframe):
@@ -262,7 +265,7 @@ if __name__ == '__main__':
     parser.add_argument('inputdir',
                         help = "input foldername consists of *.mha (*.nii or *.dcm) files. For example: 'E:\\Data\\Rectal\\input_data_folder'",
                         nargs = "*")
-    parser.add_argument('-r', help="folders as name", default=False)
+    parser.add_argument('-r', help="folders as name", default='True') # default 'False'
     
     parser.add_argument('-s', help="save foreground masks", default=False)
     
@@ -314,6 +317,7 @@ if __name__ == '__main__':
     overwrite_flag = "w"        
     headers.append(f"outdir:\t{os.path.realpath(fname_outdir)}") 
     patients, names, dicom_spil, nondicom_spli, nondicom_names, mat_spli, mat_names = patient_name(root)
+    
 
     if len(dicom_spil) > 0 and len(nondicom_spli) > 0 and len(mat_spli) > 0:
         dicom_flag = True
@@ -377,6 +381,9 @@ if __name__ == '__main__':
     if len(names) < 6:
         print('Skipped the t-SNE and UMAP computation because of insufficient data. The UMAP and t-SNE process need at least 6 input data.')
         df = tsv_to_dataframe(address)
+        df = df.drop(['Name of Images'], axis=1)
+        df = df.rename(columns={"#dataset:Patient": "Name", 
+                                "x":"TSNEX","y":"TSNEY", "u":"UMAPX", "v":"UMAPY" })
     else:
         
         df = cleanup(address, 30)
@@ -385,7 +392,7 @@ if __name__ == '__main__':
                                 "x":"TSNEX","y":"TSNEY", "u":"UMAPX", "v":"UMAPY" })
         df = df.fillna('N/A')
         df = df.drop(columns=['TSNEX', 'TSNEY', 'UMAPX', 'UMAPY'])
-        
+  
     df.to_csv(fname_outdir + os.sep +'IQM.csv',index=False)
     df.to_excel(fname_outdir + os.sep +'IQM.xlsx',index=False)
     

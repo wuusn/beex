@@ -5,6 +5,7 @@ from multiprocessing import Pool
 from PIL import Image
 import os
 import glob
+from pathlib import Path
 
 def plot_images(images, ncols=10, nrows=10, save_path=None):
     n_cohorts = len(images.keys())
@@ -87,10 +88,12 @@ def image_overview(image_files, mode, ncpus, save_dir):
         for cohort_name, files  in image_files.items():
             new_files = []
             extracted_dir = os.path.join(save_dir, 'tmp_data', cohort_name+'_extracted')
-            for file in files:
+            # for file in files:
                 # print(file)
-                extracted_files = glob.glob(os.path.join(extracted_dir, os.path.basename(file).split('.')[0], '*'))
-                new_files.extend(extracted_files)    
+                # extracted_files = glob.glob(os.path.join(extracted_dir, os.path.basename(file).split('.')[0], '*'))
+                # new_files.extend(extracted_files)
+            extracted_dir =  Path(extracted_dir)
+            new_files = list(extracted_dir.glob('**/*.png'))
             image_files[cohort_name] = new_files
             # print(len(new_files))    
 

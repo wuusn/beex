@@ -110,7 +110,7 @@ def read_tile(filepath, downscale=1):
 
 #TODO: need to update this to support more image types
 def read_image(path):
-    ext = path.split('.')[-1]
+    ext = str(path).split('.')[-1]
     if ext == 'svs':
         return read_svs(path)
     elif ext in ['png', 'jpg', 'jpeg']:
