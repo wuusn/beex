@@ -378,20 +378,11 @@ if __name__ == '__main__':
     
     address = fname_outdir + os.sep + "results" + ".tsv" 
             
-    if len(names) < 6:
-        print('Skipped the t-SNE and UMAP computation because of insufficient data. The UMAP and t-SNE process need at least 6 input data.')
-        df = tsv_to_dataframe(address)
-        df = df.drop(['Name of Images'], axis=1)
-        df = df.rename(columns={"#dataset:Patient": "Name", 
-                                "x":"TSNEX","y":"TSNEY", "u":"UMAPX", "v":"UMAPY" })
-    else:
-        
-        df = cleanup(address, 30)
-        df = df.drop(['Name of Images'], axis=1)
-        df = df.rename(columns={"#dataset:Patient": "Name", 
-                                "x":"TSNEX","y":"TSNEY", "u":"UMAPX", "v":"UMAPY" })
-        df = df.fillna('N/A')
-        df = df.drop(columns=['TSNEX', 'TSNEY', 'UMAPX', 'UMAPY'])
+   
+    df = tsv_to_dataframe(address)
+    df = df.drop(['Name of Images'], axis=1)
+    df = df.rename(columns={"#dataset:Patient": "Name", 
+                            "x":"TSNEX","y":"TSNEY", "u":"UMAPX", "v":"UMAPY" })
   
     df.to_csv(fname_outdir + os.sep +'IQM.csv',index=False)
     df.to_excel(fname_outdir + os.sep +'IQM.xlsx',index=False)

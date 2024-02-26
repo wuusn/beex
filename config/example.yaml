@@ -2,7 +2,7 @@
 
 # Title: Required, <str>, title of one configuration, there can be multiple configurations in one yaml file
 #     n_workers: Required, <int>, number of workers for parallel processing
-#     feature_mode: Required, <str>, mode of feature extraction, 'Path' for pathology and 'Radi' for radiology
+#     feature_mode: Required, <str>, mode of feature extraction, 'path' for pathology and 'radi' for radiology
 #     cohort_dir: Required, <a list of str>, a list of directories of cohort data, can be same if files in the same folder
 #         - folder1
 #         - folder2
