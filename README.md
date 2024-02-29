@@ -4,14 +4,18 @@ A tool to assess and validate batch effects in medical images.
 ![](docs/beex_overview.png)
 
 # Installation
-Step 1: clone this repo
+Step 1: make sure your system has install [OpenSlide](https://openslide.org/download/)
 
-Step 2: change dir to repo folder  
+Step 2: clone this repo
 
-Step 3: automatically create a conda env using cmd below:
+Step 3: change dir to repo folder  
+
+Step 4: automatically create a conda env using cmd below:
 ```
 conda env create -f environment.yaml
 ```
+
+
 
 # Run Example
 ```
