@@ -22,4 +22,7 @@ CaseWSI:
     clinical_column:
         - 'Age_Low_High'
         - 'Gender'
-    save_dir: '/data/project_large_files/bee/deploy_test/CaseWSI'
+    image_ext:
+        - '.png'
+    save_dir: '/data/project_large_files/bee/CaseTwo4ChortsWSI'
+    feature_path: '/mnt/hd0/project_large_files/bee/CaseTwo4ChortsWSI/features.xlsx'
