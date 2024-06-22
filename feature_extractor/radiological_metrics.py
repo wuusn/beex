@@ -24,6 +24,8 @@ def get_radi_metrics(image_files, mask_files, cohort_dirs, save_dir, n_workers):
             os.makedirs(os.path.dirname(target_file), exist_ok=True)
             if not os.path.exists(target_file):
                 # print('not exists', target_file)
+                # get real path
+                file = os.path.realpath(file)
                 os.symlink(file, target_file)
     
     features = None
@@ -36,6 +38,7 @@ def get_radi_metrics(image_files, mask_files, cohort_dirs, save_dir, n_workers):
         if (not os.path.exists(tmp_feature_dir)) or (not os.path.exists(res_path)):
             cwd = os.getcwd()
             cmd = f"python {cwd}/feature_extractor/QC.py '{save_dir}/tmp_data/{cohort_name}_extracted' '{cohort_dir}'"
+            print(cmd)
             os.system(cmd)
         
         cohort_feature = pd.read_excel(res_path, dtype={'Name': str})

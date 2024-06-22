@@ -1,9 +1,10 @@
 import os
 import matplotlib.pyplot as plt
 import umap
-import umap.plot
+# import umap.plot
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
 
 def umap_distribution_analysis(features, save_dir):
     """
@@ -14,7 +15,8 @@ def umap_distribution_analysis(features, save_dir):
     """
     # delete column Name and Cohort
     x = features.drop(['Name', 'Cohort'], axis=1)
-
+    scaler = StandardScaler()
+    x = scaler.fit_transform(x)
     # convert Cohort D1, D2 to 1, 2 etc.
     le = LabelEncoder()
     y = le.fit_transform(features['Cohort'])
@@ -27,7 +29,8 @@ def umap_distribution_analysis(features, save_dir):
     plt.gca().set_aspect('equal', 'datalim')
     colorbar = plt.colorbar(boundaries=np.arange(0, max(cohort_mapping.values())+2)-0.5)
     colorbar.set_ticks(np.arange(0, max(cohort_mapping.values())+1), labels=cohort_mapping.keys())
-    
+    plt.xlabel('UMAP1')
+    plt.ylabel('UMAP2')
     save_path = os.path.join(save_dir, 'umap.png')
     print(f'Saving UMAP plot to {save_path}')
     plt.savefig(save_path)

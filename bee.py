@@ -9,6 +9,7 @@ from multiprocessing import Pool
 from preprocessor.util import get_paths
 from analyzer import *
 from feature_extractor import extract_feature
+import itertools
 
 # ignore all warnings
 import warnings
@@ -78,7 +79,7 @@ if __name__ == '__main__':
         # create save dir
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-
+            
         # feature extraction
         if feature_path is None:
             features = extract_feature(image_files, mask_files, feature_mode, cohort_dirs, save_dir, n_workers)
@@ -94,7 +95,7 @@ if __name__ == '__main__':
         # UMAP
         umap_distribution_analysis(features, save_dir)
 
-        # Violin Plots with Significant Tests
+        # # Violin Plots with Significant Tests
         violin_plots_distribution_analysis(features, save_dir)
 
         # Hierarchical Clustering
@@ -104,7 +105,15 @@ if __name__ == '__main__':
         if clinical_data_paths is not None:
             pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, cohort_names, save_dir)
 
+        # Batch Effect Score
+        overall_bes = BES(features, len(cohort_names))
+        print(f'Overall BES: {round(overall_bes, 4)}')
 
+        pairs = itertools.combinations(cohort_names, 2)
+        for cohort1, cohort2 in pairs:
+            pair_features = features[features['Cohort'].isin([cohort1, cohort2])]
+            s = BES(pair_features, 2)
+            print(f'{cohort1}-{cohort2} BES:', round(s,4))
 
         
         

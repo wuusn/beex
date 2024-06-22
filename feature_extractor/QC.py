@@ -38,7 +38,7 @@ headers = []
 
 def patient_name(root):
     print('MRQy is starting....')
-    files = [os.path.join(dirpath,filename) for dirpath, _, filenames in os.walk(root) 
+    files = [os.path.join(dirpath,filename) for dirpath, _, filenames in os.walk(root, followlinks=True) 
                 for filename in filenames 
                 if filename.endswith('.dcm') 
                 or filename.endswith('.mha')
@@ -47,11 +47,13 @@ def patient_name(root):
                 or filename.endswith('.mat')]
     mats = [i for i in files if i.endswith('.mat')]
     dicoms = [i for i in files if i.endswith('.dcm')]
+    # print(dicoms)
     mhas = [i for i in files 
             if i.endswith('.mha')
             or i.endswith('.nii')
             or i.endswith('.gz')]
-    # print('dicoms length:', len(files), len(dicoms))
+    print(root)
+    print('dicoms length:', len(files), len(dicoms))
     mhas_subjects = [os.path.basename(scan)[:os.path.basename(scan).index('.')] for scan in mhas]
     dicom_subjects = []
     mat_subjects = [os.path.basename(scan)[:os.path.basename(scan).index('.')] for scan in mats] 
@@ -70,6 +72,7 @@ def patient_name(root):
               subjects_number.append(list(duplicateFrequencies.items())[i][1])
         ind = [0] + list(accumulate(subjects_number))
         splits = [dicoms[ind[i]:ind[i+1]] for i in range(len(ind)-1)]
+        # print('debug:', splits)
     elif folders_flag == "True":
         dicom_subjects = [d for d in os.listdir(root) if os.path.isdir(root + os.sep + d)]
         # print('folder is true', dicom_subjects)
@@ -82,6 +85,7 @@ def patient_name(root):
         subjects_id  = dicom_subjects
         ind = [0] + list(accumulate(subjects_number))
         splits = [dicoms[ind[i]:ind[i+1]] for i in range(len(ind)-1)]
+        # print('debug:', 'dicoms', dicoms)
 
     # print('subjects_id:', subjects_id)
     subjects = subjects_id + mhas_subjects + mat_subjects
@@ -135,7 +139,6 @@ def volume_dicom(scans, name):
             tag_values.append(value)
         res_dct = dict(zip(iter(tag_names), iter(tag_values)))
         tags.update(res_dct)
-        
     slices = [pydicom.read_file(s) for s in scans]
     slices.sort(key = lambda x: int(x.InstanceNumber))
     # PL = pd.DataFrame([s.pixel_array for s in slices], columns=['images'])
@@ -352,6 +355,7 @@ if __name__ == '__main__':
     
     for i in range(len(names)):
         if dicom_flag:
+            # print('debug:',dicom_spil)
             for j in range(len(dicom_spil)):
                 v = volume_dicom(dicom_spil[j], names[j])
                 folder_foregrounds = saveThumbnails_dicom(v,fname_outdir)
