@@ -40,13 +40,22 @@ def hierarchical_clustering(features, save_dir):
     norm = plt.Normalize(-10, 10)
 
     for method in ['complete', 'ward', 'average']:
+        sns.set(font_scale=1.5)
         g = sns.clustermap(scaled_df, method=method,cmap=cmap, col_colors=col_colors, norm=norm, \
-               yticklabels=True, xticklabels=False,standard_scale=None, row_cluster=False, col_cluster=True,\
-                 cbar_pos=(0.05, .2, .03, .4))
+        yticklabels=True, xticklabels=False,standard_scale=None, row_cluster=False, col_cluster=True,\
+            # cbar_pos=(0.05, .2, .03, .4))
+            cbar_pos=(0.05, .2, .015, .4),)
+            # cbar_kws={'label': 'Z-score'})
         for label, color in cohort_colors.items():
             g.ax_row_dendrogram.bar(0, 0, color=color,
                                     label=label, linewidth=0)
-        g.ax_row_dendrogram.legend(bbox_to_anchor=(0.6, 1.0))
+        # g.ax_row_dendrogram.legend(bbox_to_anchor=(0.6, 1.0))
+        legend = g.ax_row_dendrogram.legend(bbox_to_anchor=(.9, 1.1))
+        legend.get_frame().set_facecolor('white')
+        # add a z-score label on the left of the colorbar
+        g.ax_cbar.set_ylabel('Z-score')
+        g.figure.axes[-1].yaxis.set_label_position('left')
+        plt.tight_layout()
 
         # save plots
         save_path = os.path.join(save_dir, f'hierarchical_clustering_{method}.png')

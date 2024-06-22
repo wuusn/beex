@@ -20,9 +20,11 @@ def pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, 
     """
 
     # load clinical data and concatenate
+    features['Name'] = features['Name'].astype(str)
     clinical_data = pd.DataFrame()
     for clinical_data_path, cohort_name in zip(clinical_data_paths, cohort_names):
         df = pd.read_excel(clinical_data_path)
+        df['Name'] = df['Name'].astype(str)
         df = df[['Name'] + clinical_columns]
         # drop rows which name is not in features
         df = df[df['Name'].isin(features['Name'])]

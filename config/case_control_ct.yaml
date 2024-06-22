@@ -1,0 +1,21 @@
+Control_CT:
+    n_workers: 8
+    feature_mode: radi
+    image_ext:
+        - '.dcm'
+    cohort_dir:
+        - '/mnt/hd0/project_large_files/bee/ct_case_another_one/random_data/GDPH-1'
+        - '/mnt/hd0/project_large_files/bee/ct_case_another_one/random_data/GDPH-2'
+        - '/mnt/hd0/project_large_files/bee/ct_case_another_one/random_data/GDPH-3'
+    cohort_name:
+        - 'GDPH-1'
+        - 'GDPH-2'
+        - 'GDPH-3'
+    save_dir: '/mnt/hd0/project_large_files/bee/ct_case_another_one/results'
+    clinical_data:
+        - /mnt/hd0/project_large_files/bee/ct_case_another_one/random_data/GDPH-1.xlsx
+        - /mnt/hd0/project_large_files/bee/ct_case_another_one/random_data/GDPH-2.xlsx
+        - /mnt/hd0/project_large_files/bee/ct_case_another_one/random_data/GDPH-3.xlsx
+    clinical_column:
+        - 'Age_Low_High'
+        - 'Gender'

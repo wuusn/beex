@@ -1,33 +1,12 @@
-# CaseFour3CohortsMRI:
-#     n_workers: 8
-#     img_ext:
-#         - '.nii.gz'
-#     cohort_dir:
-#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH'
-#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH'
-#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU'
-#     cohort_name:
-#         - 'YCPH'
-#         - 'SSPH'
-#         - 'RHWU'
-#     clinical_data:
-#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/YCPH.xlsx'
-#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/SSPH.xlsx'
-#         - '/mnt/hd0/original_datasets/Prostate_DWI_2/RHWU.xlsx'
-#     clinical_column:
-#         - 'Age_Low_High'
-#         - 'PSA_Normal_Intermediate_High'
-#     save_dir: '/mnt/hd0/project_large_files/bee/CaseFour3CohortsMRI'
-
 CaseMRI_Before:
     feature_mode: radi
     n_workers: 8
     image_ext:
         - 'nii.gz'
     cohort_dir:
-        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/YCPH'
-        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/SSPH'
-        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/RHWU'
+        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/YCPH_crop'
+        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/SSPH_crop'
+        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/RHWU_crop'
     cohort_name:
         - 'YCPH'
         - 'SSPH'
@@ -40,7 +19,7 @@ CaseMRI_Before:
         - 'Age_Low_High'
         - 'PSA_Normal_Intermediate_High'
     # feature_path: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_before_3/features.xlsx'
-    save_dir: '/mnt/hd0/project_large_files/bee/deploy_test/Case4_3cohorts_before_3_fix_overview'
+    save_dir: '/mnt/hd0/project_large_files/bee/deploy_test/Case4_3cohorts_before_4'
     seed: 2023
 
 CaseMRI_After:
@@ -50,7 +29,7 @@ CaseMRI_After:
         - 'nii.gz'
     cohort_dir:
         - '/mnt/hd0/project_large_files/bee/caseMRI_data/after/YCPH'
-        - '/mnt/hd0/project_large_files/bee/caseMRI_data/after/SSPH'
+        - '/mnt/hd0/project_large_files/bee/caseMRI_data/after/SSPH_crop'
         - '/mnt/hd0/project_large_files/bee/caseMRI_data/after/RHWU'
     cohort_name:
         - 'YCPH'
@@ -64,5 +43,5 @@ CaseMRI_After:
         - 'Age_Low_High'
         - 'PSA_Normal_Intermediate_High'
     # feature_path: '/mnt/hd0/project_large_files/bee/Case4_3cohorts_after_3/features.xlsx'
-    save_dir: '/mnt/hd0/project_large_files/bee/deploy_test/Case4_3cohorts_after_3_fix_overview'
+    save_dir: '/mnt/hd0/project_large_files/bee/deploy_test/Case4_3cohorts_after_4_2cohort'
     seed: 2023

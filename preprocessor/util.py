@@ -17,7 +17,7 @@ def get_paths(folder, identifier=None, exts=None):
     filepaths = []
     exts = supported_exts if exts is None else exts
     exts = list(set(exts))
-    for root, dirs, files in os.walk(folder):
+    for root, dirs, files in os.walk(folder, followlinks=True):
         for file in files:
             file_ext = file.split('.')[-1]
             if identifier is None:

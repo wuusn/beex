@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 import math
 from statsmodels.stats.multitest import multipletests
-from scipy.stats import kruskal
+from scipy.stats import kruskal, mannwhitneyu
+import itertools
 
-def significant_analysis(features, save_dir):
+def significant_analysis(features, save_dir, level=0.05):
     """
     Get significant features from features dataframe.
     Features can separate different cohorts.
@@ -15,78 +16,79 @@ def significant_analysis(features, save_dir):
     :param save_dir: str, save directory
     return dict names of significant features
     """
-    # duplicate df
-    df = features
-    df_selected = features.copy()
-    # drop column Name and Cohort
-    df_selected.drop(['Name', 'Cohort'], axis=1, inplace=True)
-    # get feature names
-    feature_names = list(df_selected.columns.values)
+    features = features.loc[:, (features != 0).any(axis=0)]
+    cohorts = features['Cohort'].unique()
+    feature_names = features.columns.tolist()
+    feature_names.remove('Cohort')
+    feature_names.remove('Name')
 
-    # Scale the DataFrame
     scaler = StandardScaler()
-    scaled_df = pd.DataFrame(scaler.fit_transform(df_selected), columns=df_selected.columns)
+    fscaled = pd.DataFrame(scaler.fit_transform(features[feature_names]), columns=feature_names)
+    fscaled['Cohort'] = features['Cohort']
+    features = fscaled
 
-    # Replace NaN values with 0
-    scaled_df = scaled_df.fillna(0)
+    pvalues = {}
 
-    # Compute the correlation matrix
-    # corr_mat = scaled_df.cov()
-    scaled_df = scaled_df.transpose()
-    # scaled_df = scaled_df.reset_index(drop=True)
+    for feature_name in feature_names:
+        # print(feature_name)
+        pairs = itertools.combinations(cohorts, 2)
+        for cohort1, cohort2 in pairs:
+            input_lists = [
+                features[features['Cohort'] == cohort1][feature_name].tolist(),
+                features[features['Cohort'] == cohort2][feature_name].tolist(),
+            ]
+            # min_len = min([len(input_list) for input_list in input_lists])
+            # input_lists = [input_list[:min_len] for input_list in input_lists]
+            try:
+                # pvalue = kruskal(*input_lists).pvalue
+                pvalue = mannwhitneyu(*input_lists).pvalue
+            except:
+                pvalue = 1
+            # print(pvalue)
+            # pvalue = wilcoxon(*input_lists).pvalue
+            comb = f'{cohort1}-{cohort2}'
+            if comb not in pvalues:
+                pvalues[comb] = [pvalue]
+            else:
+                pvalues[comb].append(pvalue)
 
-    # Define the column annotation colors
-    Batch_anno = pd.DataFrame(data={'BatchName':df['Cohort']})
-    Batch_anno = Batch_anno.reset_index(drop=True)
+    pair_names = list(pvalues.keys())
+    all_pvalues= []
+    for pair_name in pair_names:
+        all_pvalues.extend(pvalues[pair_name])
+    # adjusted_pvalues = multipletests(all_pvalues, method='fdr_bh')[1]
+    adjusted_pvalues = multipletests(all_pvalues, method='bonferroni')[1]
+  
+    for i in range(len(pair_names)):
+        pvalues[pair_names[i]] = adjusted_pvalues[i*len(feature_names):(i+1)*len(feature_names)]
 
-    # Transpose the dataframe
-    scaled_df_kruskal = pd.DataFrame(scaled_df.T)
-    # scaled_df_kruskal = scaled_df_kruskal.loc[:, (scaled_df_kruskal != 0).any(axis=0)]
+    data = {}
+    data['feature'] = feature_names
+    for pair_name in pair_names:
+        data[pair_name] = pvalues[pair_name]
+    # for each feature, all pairs's pvalue <0.05, this feature is significant
+    significants = []
+    for feature_name in feature_names:
+        is_significant = True
+        for pair_name in pair_names:
+            if pvalues[pair_name][feature_names.index(feature_name)] >= level:
+                is_significant = False
+                break
+        significants.append(is_significant)
+    data['Significant'] = significants
+    df = pd.DataFrame(data)
+    df.to_excel(os.path.join(save_dir, 'p_values.xlsx'))
 
-    # Assign column names
-    names = scaled_df_kruskal.columns
+    significant_features = df[df['Significant'] == True]['feature'].values
 
-    # Add the 'Batch' column
-    scaled_df_kruskal['Batch'] = Batch_anno['BatchName'].values
-    # Create a list of dataframes, each dataframe is a batch
-    batch_list = []
-    for batch in scaled_df_kruskal['Batch'].unique():
-        batch_list.append(scaled_df_kruskal[scaled_df_kruskal['Batch'] == batch])
-    # Create an empty DataFrame with the specified number of rows and columns
-    kruskal_p_values = pd.DataFrame(index=range(len(names)), columns=['var_name', 'h_statistic', 'p_value', 'adjusted_p_value'])
-
-    # Compute the Kruskal-Wallis H-test for each feature
-    for i in range(len(names)):
-        # Create a list of dataframes, each dataframe is a feature
-        feature_list = []
-        for batch in batch_list:
-            feature_list.append(batch.iloc[:, i])
-        # Compute the Kruskal-Wallis H-test
-        kruskal_p_values.iloc[i, 0] = names[i]
-        try:
-            kruskal_p_values.iloc[i, 1], kruskal_p_values.iloc[i, 2] = kruskal(*feature_list)
-        except:
-            kruskal_p_values.iloc[i, 1] = 1
-    # save to excel
-    # print(kruskal_p_values)
-    
-    # get significant features
-    p_values = kruskal_p_values['p_value'].values
-    # print(f'p values: {p_values}')
-    reject, adjusted_p_values, _, _ = multipletests(p_values, alpha=0.05, method='fdr_bh')
-    kruskal_p_values['adjusted_p_value'] = adjusted_p_values
-    # print(f'Adjusted p value: {adjusted_p_value}')
-    significant_features = kruskal_p_values[kruskal_p_values['adjusted_p_value'] < 0.05]['var_name'].values
-    kruskal_p_values = kruskal_p_values.dropna().sort_values(by='p_value')
-    kruskal_p_values.to_excel(os.path.join(save_dir, 'kruskal_p_values.xlsx'), index=False)
-    print(f'Saving Kruskal p values to {os.path.join(save_dir, "kruskal_p_values.xlsx")}')
-    return significant_features
+    print(f'Saving p values to {os.path.join(save_dir, "p_values.xlsx")}')
+    return pvalues
 
 
 
 
 
-def violin_plots_distribution_analysis(features, save_dir):
+def violin_plots_distribution_analysis(features, save_dir, level=0.05):
     """
     Draw violin plots for each feature of all cohorts.
     Plots will be highlighted if the feature is significant.
@@ -98,10 +100,11 @@ def violin_plots_distribution_analysis(features, save_dir):
     features = features.loc[:, (features != 0).any(axis=0)]
 
     # get significant features
-    significant_features = significant_analysis(features, save_dir)
+    pvalues = significant_analysis(features, save_dir, level)
 
     # get feature names (except Name and Cohort)
     feature_names = list(features.columns.values)
+    cohorts = features['Cohort'].unique()
     feature_names.remove('Name')
     feature_names.remove('Cohort')
 
@@ -117,17 +120,38 @@ def violin_plots_distribution_analysis(features, save_dir):
     # set figure size
     fig, axs = plt.subplots(num_rows, num_cols, figsize=(num_cols*5, num_rows*5))
 
-    for ax, feature in zip(axs.flatten(), feature_names):
-        sns.violinplot(x='Cohort', y=feature, data=features, ax=ax, hue='Cohort', legend=False)
+    for i, ax, feature in zip(range(num_features), axs.flatten(), feature_names):
+        if i == num_cols-1:
+            sns.violinplot(x='Cohort', y=feature, data=features, ax=ax, hue='Cohort', legend=True)
+            # set legend size
+            ax.legend(fontsize=30)
+        else:
+            sns.violinplot(x='Cohort', y=feature, data=features, ax=ax, hue='Cohort', legend=False)
         # highlight significant features
-        if feature in significant_features:
-            ax.set_facecolor((1, 0, 0, 0.1))
-        ax.set_xlabel('')
-    
-    # delete empty subplots
+        for c_i, cohort in enumerate(cohorts):
+        # ax.set_facecolor((1, 0, 0, 0.1))
+            significant = True
+            for k,v in pvalues.items():
+                if cohort in k:
+                    if v[i] >= level:
+                        significant = False
+            if significant:
+                ax.axvspan(c_i-0.5, c_i+0.5, facecolor='r', alpha=0.1)
+        # hide x-asis 
+        # ax.get_xaxis().set_visible(False)
+        ax.xaxis.set_ticklabels([])
+        ax.set_xlabel(feature, fontsize=30)
+        ax.set_ylabel('')
+        # set y axis font size
+        ax.tick_params(labelsize=20)
+        # delete ax legend
+        # ax.get_legend().remove()
+        # set y axis font size
+        
     for ax in axs.flatten():
-        if not ax.get_ylabel():
+        if not ax.get_xlabel():
             fig.delaxes(ax)
+    fig.tight_layout()
     
     # save figure
     save_path = os.path.join(save_dir, 'violin_plots.png')

@@ -62,6 +62,7 @@ def plot_images(images, ncols=10, nrows=10, save_path=None):
     if save_path:
         plt.savefig(save_path)
     plt.close()
+    return save_path
 
 def image_overview(image_files, mode, ncpus, save_dir):
     """
@@ -72,8 +73,10 @@ def image_overview(image_files, mode, ncpus, save_dir):
     param: save_dir: str, path to save dir
     """
     images = {}
+    check_files={}
     for cohort_name in image_files.keys():
         images[cohort_name] = []
+        check_files[cohort_name] = []
     n_cohort = len(image_files.keys())
     # find largest value can be divided by n_cohort range from [16,21]
     ncols = None
@@ -106,10 +109,22 @@ def image_overview(image_files, mode, ncpus, save_dir):
         else:
             indices = np.random.choice(len(files), n_cohort_rows*ncols, replace=False)
         files = np.array(files)[indices]
+        image_files[cohort_name] = files
         # using multi processing
         with Pool(ncpus) as p:
             for cohort_name, files in image_files.items():
                 images[cohort_name] = p.map(read_image, files)
+        # for cohort_name, files in image_files.items():
+            # images[cohort_name] = [read_image(file) for file in files]
+            # check_files[cohort_name] = files
+    
+    # save check files
+    # with open(save_dir+'/check_files.txt', 'w') as f:
+    #     for cohort_name, files in check_files.items():
+    #         f.write(cohort_name+'\n')
+    #         for file in files:
+    #             f.write(str(file)+'\n')
+    #         f.write('\n')
 
     plot_images(images, ncols=ncols, nrows=n_cohort_rows*n_cohort, save_path=save_dir+'/image_overview.png')
     print('image overview saved to {}'.format(save_dir+'/image_overview.png'))
