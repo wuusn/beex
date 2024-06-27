@@ -18,5 +18,5 @@ CaseTMA:
     clinical_column:
         - 'Invasion'
         - 'Overgrade'
-    save_dir: '/data/project_large_files/bee/deploy_test/CaseVTMA_adjust_p'
+    save_dir: '/data/project_large_files/bee/final_test/VTMA'
     feature_path: '/mnt/hd0/project_large_files/bee/CaseVTMA_v3/features.xlsx'

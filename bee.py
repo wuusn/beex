@@ -106,14 +106,24 @@ if __name__ == '__main__':
             pvca_distribution_analysis(features, clinical_data_paths, clinical_columns, cohort_names, save_dir)
 
         # Batch Effect Score
+        bes = {'BES':[], 'Value':[]}
         overall_bes = BES(features, len(cohort_names))
+        bes['BES'].append('overall')
+        bes['Value'].append(round(overall_bes, 4))
         print(f'Overall BES: {round(overall_bes, 4)}')
 
         pairs = itertools.combinations(cohort_names, 2)
         for cohort1, cohort2 in pairs:
             pair_features = features[features['Cohort'].isin([cohort1, cohort2])]
             s = BES(pair_features, 2)
-            print(f'{cohort1}-{cohort2} BES:', round(s,4))
+            bes['BES'].append(f'{cohort1} to {cohort2}')
+            bes['Value'].append(round(s, 4))
+            print(f'{cohort1} to {cohort2} BES:', round(s,4))
+        # save bes dict to excel
+        df = pd.DataFrame(bes)
+        df.to_excel(os.path.join(save_dir, 'BES.xlsx'))
+        print(f'Saving BES to {os.path.join(save_dir, "BES.xlsx")}')
+
 
         
         

@@ -4,9 +4,9 @@ CaseMRI_Before:
     image_ext:
         - 'nii.gz'
     cohort_dir:
-        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/YCPH_crop'
-        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/SSPH_crop'
-        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/RHWU_crop'
+        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/YCPH'
+        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/SSPH'
+        - '/mnt/hd0/project_large_files/bee/caseMRI_data/before/RHWU'
     cohort_name:
         - 'YCPH'
         - 'SSPH'

@@ -1,0 +1,3 @@
+pip
+matplotlib
+numpy

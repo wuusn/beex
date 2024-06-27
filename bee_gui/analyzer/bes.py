@@ -1,4 +1,4 @@
-from .consensusclustering.consensusclustering.consensusbak import ConsensusClustering
+from .consensusclustering.consensusclustering.consensus import ConsensusClustering
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_classification
