@@ -16,6 +16,6 @@ python app.py
 ```
 5. build the BEEx GUI
 ```
-pyinstaller app.py
+pyinstaller --collect-submodules=pydicom app.py
 ```
 the runnable file will be in the `dist` folder.
