@@ -27,9 +27,8 @@ def plot_images(images, ncols=10, nrows=10, save_path=None):
                 break
             ax = axs[ax_i]
             ax.axis('off')
-            # small_img = Image.fromarray(img).resize((img.shape[1]//4, img.shape[0]//4))
-            small_img = img
-            img = np.array(small_img)
+            img = Image.fromarray(img)#.resize((img.shape[1]//4, img.shape[0]//4))
+            img = np.array(img)
             if len(img.shape) == 2:
                 ax.imshow(img, cmap='gray')
             else:
@@ -107,6 +106,6 @@ def image_overview(image_files, mode, ncpus, save_dir):
         # using multi processing
         with Pool(ncpus) as p:
             for cohort_name, files in image_files.items():
-                images[cohort_name] = p.map(read_image, files, 16)
+                images[cohort_name] = p.map(read_image, files, 4)
     image_path = save_dir+'/image_overview.png'
     return plot_images(images, ncols=ncols, nrows=n_cohort_rows*n_cohort, save_path=image_path)
