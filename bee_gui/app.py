@@ -18,6 +18,7 @@ from pathlib import Path
 import itertools
 import pandas as pd
 from preprocessor.util import get_paths
+import multiprocessing
 
 class ImageDialog(QDialog):
     def __init__(self, title, image_path, parent):
@@ -274,7 +275,10 @@ class BEEX_UI(QDialog):
             mask_files[cohort_name] = [None]*len(image_files[cohort_name])
         for cohort_name, files in image_files.items():
             print(cohort_name, len(files))
-        
+        ext = Path(image_files[cohort_name][0]).suffix
+        if ext in ['.nii', '.nii.gz', '.dcm', '.gz']:
+            mode = 'Radiology'
+        print('mode:', mode)
         try:
             features = extract_feature(image_files, mask_files, mode, cohort_dirs, save_dir, n_workers)
             
@@ -318,7 +322,7 @@ class BEEX_UI(QDialog):
                 print(f'Saving BES to {os.path.join(save_dir, "BES.xlsx")}')
         except Exception as e:
             print(e)
-            QMessageBox.critical(self, "Error", f"An error occurred during analysis. Please check the logs for more details. {e}")
+            QMessageBox.critical(self, "Error", str(e))
             self.stop()
             return
 
@@ -358,6 +362,7 @@ class BEEX_UI(QDialog):
             self.savePathLabel.setText(dir_path)
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     app = QApplication(sys.argv)
     window = BEEX_UI()
     window.show()

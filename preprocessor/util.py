@@ -28,5 +28,5 @@ def get_paths(folder, identifier=None, exts=None):
                 for ext in exts:
                     if file_ext in ext:
                         filepaths.append(os.path.join(root, file))
-    return filepaths
+    return list(set(filepaths))
 

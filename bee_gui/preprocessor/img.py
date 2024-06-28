@@ -109,12 +109,12 @@ def read_tile(filepath, downscale=1):
 #TODO: add a function to read 3s medical imaging files
 
 #TODO: need to update this to support more image types
-def read_image(path):
+def read_image(path, downscale=1):
     ext = str(path).split('.')[-1]
     if ext == 'svs':
         assert False, 'SVS files are not supported in the BEEx GUI'
         # return read_svs(path)
     elif ext in ['png', 'jpg', 'jpeg']:
-        return read_tile(path)
+        return read_tile(path, downscale=downscale)
     else:
         raise NotImplementedError(f'Not implemented for {ext} file type, also check feature mode.')
