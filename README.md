@@ -10,6 +10,9 @@ To use the BEEx GUI, users need to specify the location of image files of each c
 
 ![](docs/beex_gui.png)
 
+# OS Requirements
+BEEx requires a 64-bit Windows, Linux, or Mac operating system with at least 16 GB of RAM. 
+
 # BEEx from command line
 For easy of use, BEEx GUI currently is not support WSI filetype and PVCA analyzer. The command line version is fully functional. Here is the usage of BEEx from command line. 
 
@@ -24,9 +27,6 @@ Step 4: automatically create a conda env using cmd below:
 ```
 conda env create -f environment.yaml
 ```
-
-## OS Requirements
-BEEx requires a 64-bit Windows, Linux, or Mac operating system with at least 16 GB of RAM. 
 
 ## Run Example
 ```
