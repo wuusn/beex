@@ -109,6 +109,12 @@ class BEEX_UI(QDialog):
         worker_label = QLabel("CPU Workers:")
         worker_label.setBuddy(self.num_worker_spinbox)
 
+        # save path
+        self.savePathLabel = QLabel("No directory selected")
+        self.savePathButton = QPushButton("Select Save Directory")
+        self.savePathButton.clicked.connect(self.selectSavePath)
+        self.savePathLabel.setBuddy(self.savePathButton)
+        
         # layout for the top part of the dialog
         top_layout = QHBoxLayout()
         top_layout.addWidget(mode_label)
@@ -117,6 +123,10 @@ class BEEX_UI(QDialog):
         top_layout.addWidget(worker_label)
         top_layout.addWidget(self.num_worker_spinbox)
         top_layout.addStretch(1)
+        top_layout.addWidget(self.savePathLabel)
+        top_layout.addWidget(self.savePathButton)
+        top_layout.addStretch(1)
+
 
         # cohort table where users add cohort info
         cohort_group = QGroupBox("Cohorts")
@@ -199,6 +209,11 @@ class BEEX_UI(QDialog):
 
         self.setWindowTitle("BEEx for Medical Images")
         # self.process = QProcess(self)
+    
+    def selectSavePath(self):
+        dir_path = QFileDialog.getExistingDirectory(self, "Select Save Directory")
+        if dir_path:
+            self.savePathLabel.setText(dir_path)
 
     def togglePVCAColumnInput(self, state):
         if state == 2:
@@ -262,7 +277,8 @@ class BEEX_UI(QDialog):
 
         # Run the analysis
         # default save dir in Desktop
-        save_dir = os.path.join(os.path.expanduser("~"), "Desktop", "BEEx_Results")
+        # save_dir = os.path.join(os.path.expanduser("~"), "Desktop", "BEEx_Results")
+        save_dir = self.savePathLabel.text()
         save_dir = Path(save_dir)
         save_dir.mkdir(parents=True, exist_ok=True)
 
