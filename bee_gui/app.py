@@ -344,7 +344,7 @@ class BEEX_UI(QDialog):
 
         # pop up a window show run successfully
         self.stop()
-        QMessageBox.information(self, "Success", "Analysis completed successfully! Results are saved to the Desktop.")
+        QMessageBox.information(self, "Success", f"Analysis completed successfully! Results are saved to the {save_dir}.")
             
             
 
