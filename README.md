@@ -64,6 +64,6 @@ CaseTMA: # The config title, can be any string
 ```
 ## Citation
 [manuscript](can-23-3846.pdf)
-```
-Yuxin Wu, Xiongjun Xu, Yuan Cheng, Xiuming Zhang, Fanxi Liu, Zhenhui Li, Lei Hu, Anant Madabhushi, Peng Gao, Zaiyi Liu, Cheng Lu; BEEx Is an Open-Source Tool That Evaluates Batch Effects in Medical Images to Enable Multicenter Studies. Cancer Res 15 January 2025; 85 (2): 218–230. https://doi.org/10.1158/0008-5472.CAN-23-3846
-```
+
+> Yuxin Wu, Xiongjun Xu, Yuan Cheng, Xiuming Zhang, Fanxi Liu, Zhenhui Li, Lei Hu, Anant Madabhushi, Peng Gao, Zaiyi Liu, Cheng Lu; BEEx Is an Open-Source Tool That Evaluates Batch Effects in Medical Images to Enable Multicenter Studies. Cancer Res 15 January 2025; 85 (2): 218–230. https://doi.org/10.1158/0008-5472.CAN-23-3846
+
